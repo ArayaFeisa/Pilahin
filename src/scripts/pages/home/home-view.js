@@ -18,7 +18,7 @@ const HomeView = {
 
     bindEvents() {
         document.getElementById("start-button")?.addEventListener("click", () => {
-            window.location.hash = '/about';
+            window.location.hash = '/scan';
         })
     }
 }
