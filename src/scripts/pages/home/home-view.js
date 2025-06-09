@@ -1,17 +1,26 @@
+import "../../../styles/home.css";
+
 const HomeView = {
     render() {
     return `
-      <main id="main-content" class="landing container" tabindex="-1">
-        <div class="landing-text">
-          <h1>Selamat Datang di Gudang StoryMap!</h1>
-          <button id="start-button" class="start-button" aria-label="Mulai menggunakan aplikasi StoryMap">
+      <main id="main-content" class="home container" tabindex="-1">
+        <div class="home-text">
+          <h2>Selamat Datang di</h2>
+          <h1>Pilahin</h1>
+          <button id="start-button" class="start-button" aria-label="Mulai menggunakan Pilahin!">
             Mulai
           </button>
         </div>
-        <img src="/images/inilogo.png" alt="Logo Gudang StoryMap" class="landing-image" />
+        <img src="/images/inilogo.png" alt="Logo Pilahin" class="home-image" />
       </main>
     `;
-  },
+    },
+
+    bindEvents() {
+        document.getElementById("start-button")?.addEventListener("click", () => {
+            window.location.hash = '/about';
+        })
+    }
 }
 
 export default HomeView;

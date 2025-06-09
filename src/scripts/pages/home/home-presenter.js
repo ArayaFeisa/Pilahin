@@ -9,6 +9,6 @@ export default class HomePresenter {
         return this._view.render();
     }
     async afterRender() {
-        
+        this._view.bindEvents();
     }
 }
