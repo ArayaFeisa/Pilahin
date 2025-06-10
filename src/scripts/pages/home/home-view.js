@@ -1,26 +1,58 @@
 import "../../../styles/home.css";
 
 const HomeView = {
-    render() {
+  render() {
     return `
-      <main id="main-content" class="home container" tabindex="-1">
-        <div class="home-text">
-          <h2>Selamat Datang di</h2>
-          <h1>Pilahin</h1>
+      <section id="get-start" class="get-start">
+        <div class="get-start-content">
+          <h1 class="get-start-title">Classify your Waste</h1>
+          <p class="get-start-subtitle">
+            Pilah sampah Anda dari rumah, kapan saja, di mana saja — Lebih mudah hanya dengan satu klik.
+          </p>
           <button id="start-button" class="start-button" aria-label="Mulai menggunakan Pilahin!">
-            Mulai
+            Get Start
           </button>
         </div>
-        <img src="/images/inilogo.png" alt="Logo Pilahin" class="home-image" />
-      </main>
-    `;
-    },
+      </section>
 
-    bindEvents() {
-        document.getElementById("start-button")?.addEventListener("click", () => {
-            window.location.hash = '/scan';
-        })
-    }
-}
+      <section id="our-features" class="our-features">
+        <h2 class="features-title">Our Features</h2>
+        <p class="features-subtitle">Kami tidak hanya membuat platform, tapi menghadirkan solusi pintar untuk memilah sampah lewat teknologi, edukasi, dan kemudahan akses bagi semua.</p>
+        <div class="features-cards">
+          <div class="feature-card">
+            <h3>Smart Waste</h3>
+            <p>Praktis, cepat, dan bisa kamu lakukan langsung dari rumah.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Eco Education</h3>
+            <p>Belajar jadi lebih seru lewat video dan artikel seputar lingkungan, daur ulang, dan gaya hidup berkelanjutan.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Recycle Near Me</h3>
+            <p>Cukup ketik lokasi, dan mulai berkontribusi langsung dari lingkungan sekitar.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="about-us" class="about-us">
+        <div class="about-us-image">
+          <img src="/images/about-us.png" alt="Tentang Pilahin" />
+        </div>
+        <div class="about-us-content">
+          <h2 class="about-us-title">About Us</h2>
+          <p class="about-us-subtitle">
+            Kami berkomitmen membantu Anda dalam memilah sampah dan menjaga lingkungan.
+          </p>
+        </div>
+      </section>
+    `;
+  },
+
+  bindEvents() {
+    document.getElementById("start-button")?.addEventListener("click", () => {
+      window.location.hash = "/scan";
+    });
+  },
+};
 
 export default HomeView;

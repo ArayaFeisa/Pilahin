@@ -1,7 +1,6 @@
 * {
   margin: 0;
   padding: 0;
-
   box-sizing: border-box;
 }
 
@@ -22,11 +21,9 @@ header {
 .main-header {
   min-height: 90px;
   padding-block: 20px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 30px;
 }
 
 .brand-name {
@@ -37,19 +34,20 @@ header {
 }
 
 .navigation-drawer {
-  min-height: 100vh;
-  width: 200px;
-  padding: 20px 10px;
-  background-color: #fff;
-
   position: fixed;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100vh;
+  background-color: #fff;
   box-shadow: 0 0 4px 2px #00000033;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
   transform: translateX(-100%);
   transition: transform 350ms;
-
   z-index: 9999;
 }
 
@@ -61,31 +59,24 @@ header {
   padding: 8px;
   border: 0;
   border-radius: 4px;
-
-  display: inline-block;
   background-color: transparent;
-
   font-weight: bold;
   font-size: 28px;
   color: #141e16;
-
   cursor: pointer;
 }
 
 .nav-list {
   list-style: none;
-
   display: flex;
   flex-direction: column;
-  gap: 10px 20px;
+  gap: 10px;
 }
 
 .nav-list li a {
-  padding: 6px 10px;
-
   display: block;
-  
-  color: #333;
+  padding: 6px 10px;
+  color: #000;
   text-decoration: none;
 }
 
@@ -93,34 +84,53 @@ header {
   text-decoration: underline;
 }
 
-/* MAIN */
+.nav-auth {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto; /* push to bottom */
+}
+
+.nav-auth li a {
+  display: block;
+  padding: 6px 10px;
+  color: #0a9db0;
+  text-decoration: none;
+}
+
+.nav-auth li a:hover {
+  text-decoration: underline;
+}
+
 .main-content {
   padding-block: 20px;
 }
 
-/* Write your styles more here */
-
-@media screen and (width > 1000px) {
+/* Desktop (navbar horizontal) */
+@media screen and (min-width: 1000px) {
   .navigation-drawer {
-    min-height: auto;
-    width: auto;
-    padding: 0;
-    background-color: transparent;
-
-    flex-direction: row;
-    justify-content: space-between;
-
     position: static;
+    width: auto;
+    height: auto;
+    background-color: transparent;
     box-shadow: none;
     transform: translateX(0);
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
   }
 
   .nav-list {
     flex-direction: row;
+    gap: 20px;
   }
 
-  .nav-list li a {
-    display: inline-block;
+  .nav-auth {
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 0;
+    margin-left: auto;
   }
 
   .drawer-button {

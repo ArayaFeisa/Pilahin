@@ -1,45 +1,39 @@
-.home {
+/* Section: Get Start */
+.get-start {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  min-height: 500px;
   padding: 80px 20px;
-  background-color: #f7eed3;
-  gap: 40px;
-  flex-wrap: wrap;
+  background: url('../public/images/background.png') no-repeat center center;
+  background-size: cover;
 }
 
-.home-text {
-  flex: 1;
-  max-width: 500px;
+.get-start::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.5); /* Efek opacity background image */
 }
 
-.home-text h1 {
+.get-start-content {
+  position: relative;
+  max-width: 600px;
+  z-index: 1;
+}
+
+.get-start-title {
   font-size: 2.5rem;
+  color: #000;
+  font-weight: bold;
   margin-bottom: 20px;
-  color: #333;
-  text-align: left;
 }
 
-#start-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #0a9db0;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#start-button:hover {
-  background-color: #096d7b;
-}
-
-.home-image {
-  flex: 1;
-  max-width: 400px;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 10px;
+.get-start-subtitle {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 30px;
 }
 
 .start-button {
@@ -50,32 +44,116 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
 }
 
 .start-button:hover {
   background-color: #096d7b;
 }
 
-.home-description {
-  margin-top: 1rem;
+/* Section: Our Features */
+.our-features {
+  background-color: white;
+  border-radius: 15px;
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: -100px auto 40px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.features-title {
+  font-size: 2rem;
+  color: #0a9db0;
+  margin-bottom: 10px;
+}
+
+.features-subtitle {
   font-size: 1.1rem;
   color: #333;
+  margin-bottom: 30px;
+}
+
+.features-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.feature-card {
+  background-color: #0a9db0;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1 1 250px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 1rem;
+}
+
+/* Section: About Us */
+.about-us {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 60px 20px;
+  gap: 40px;
+}
+
+.about-us-image {
+  flex: 1;
+  max-width: 50%;
+  position: relative;
+}
+
+.about-us-image img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  mask-image: linear-gradient(to right, rgba(0,0,0,1) 50%, rgba(0,0,0,0.5) 100%);
+}
+
+.about-us-content {
+  flex: 1;
+}
+
+.about-us-title {
+  color: #0a9db0;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.about-us-subtitle {
+  color: #333;
+  font-size: 1.1rem;
 }
 
 @media (max-width: 768px) {
-  .home {
+  .about-us {
     flex-direction: column;
     text-align: center;
-    gap: 20px;
   }
 
-  .home-text h1 {
+  .about-us-image,
+  .about-us-content {
+    max-width: 100%;
+  }
+
+  .get-start {
+    justify-content: center;
     text-align: center;
   }
 
-  .home-image {
-    width: 100%;
-    max-width: 300px;
+  .get-start-content {
+    max-width: 100%;
   }
 }
