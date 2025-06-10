@@ -63,6 +63,21 @@ const HomeView = {
           </p>
         </div>
       </section>
+
+      <section id="about-us" class="about-us">
+        <div class="about-us-image">
+          <img src="/images/about-us.png" alt="Tentang Pilahin" />
+        </div>
+        <div class="about-us-content">
+          <h2 class="about-us-title">About Us</h2>
+          <p class="about-us-subtitle">
+            Pilahin adalah platform digital yang membantu masyarakat memilah sampah dengan
+             mudah lewat teknologi AI. Kami juga menyediakan edukasi seputar lingkungan dan peta
+             lokasi Bank Sampah untuk mendukung aksi nyata dari rumah. Semua dalam satu aplikasi 
+             yang praktis dan ramah pengguna.
+          </p>
+        </div>
+      </section>
     `;
   },
 
