@@ -7,7 +7,7 @@ const HomeView = {
         <div class="get-start-content">
           <h1 class="get-start-title">Classify your Waste</h1>
           <p class="get-start-subtitle">
-            Pilah sampah Anda dari rumah, kapan saja, di mana saja — Lebih mudah hanya dengan satu klik.
+            Pilah sampah Anda dari rumah, kapan saja, di mana saja — Lebih mudah hanya dengan satu klik. wlwuwluwlwulwuwlwulwulwulwulwuwlu
           </p>
           <button id="start-button" class="start-button" aria-label="Mulai menggunakan Pilahin!">
             Get Start
