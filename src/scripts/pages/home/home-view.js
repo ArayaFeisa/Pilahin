@@ -31,6 +31,14 @@ const HomeView = {
             <h3>Recycle Near Me</h3>
             <p>Cukup ketik lokasi, dan mulai berkontribusi langsung dari lingkungan sekitar.</p>
           </div>
+          <div class="feature-card">
+            <h3>Recycle Near Me</h3>
+            <p>Cukup ketik lokasi, dan mulai berkontribusi langsung dari lingkungan sekitar.</p>
+          </div>
+          <div class="feature-card">
+            <h3>resing</h3>
+            <p>mbohhh.</p>
+          </div>
         </div>
       </section>
 
@@ -45,6 +53,13 @@ const HomeView = {
           </p>
           <p class="about-us-subtitle">
             Misi kami adalah membangun kebiasaan ramah lingkungan yang inklusif dan berkelanjutan. Dengan Pilahin, kami percaya setiap orang bisa ikut berkontribusi menjaga bumi—mulai dari langkah kecil yang sederhana.
+          </p>
+          <p class="about-us-subtitle">
+            yapyapyap gajelasss
+          </p>
+
+          <p class="about-us-subtitle">
+            gastok
           </p>
         </div>
       </section>
