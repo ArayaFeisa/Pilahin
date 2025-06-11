@@ -2,6 +2,8 @@ import "../../../styles/scan.css";
 
 const ScanView = {
   videoStream: null,
+  selectedImageElement: null, // untuk referensi gambar upload
+  model: null, // model TensorFlow.js
 
   render() {
     return `
@@ -31,11 +33,41 @@ const ScanView = {
     `;
   },
 
+  async loadModel() {
+    if (!this.model) {
+      this.model = await window.tf.loadGraphModel('/model/model.json');
+    }
+  },
+
+  async classifyImage() {
+    if (!this.selectedImageElement || !this.model) {
+      alert("Silakan upload gambar terlebih dahulu!");
+      return;
+    }
+
+    const img = this.selectedImageElement;
+    const tensor = window.tf.browser.fromPixels(img)
+      .resizeNearestNeighbor([150, 150]) // sesuai input model
+      .toFloat()
+      .expandDims(0); // jadi batch [1, 150, 150, 3]
+
+    const prediction = this.model.predict(tensor);
+    const predictionData = await prediction.data();
+
+    // Asumsi: output model adalah [organik, non organik, bahan berbahaya]
+    const classes = ["Organik", "Non-Organik", "Bahan Berbahaya"];
+    const maxIndex = predictionData.indexOf(Math.max(...predictionData));
+    const label = classes[maxIndex];
+
+    document.getElementById("result-text").innerText = `Hasil deteksi: ${label}`;
+  },
+
   bindEvents() {
     const uploadButton = document.getElementById("upload-button");
     const cameraButton = document.getElementById("camera-button");
     const fileInput = document.getElementById("file-input");
     const previewContainer = document.getElementById("scan-preview-container");
+    const pilahButton = document.getElementById("pilah-button");
 
     // Fungsi untuk mematikan kamera
     const stopVideoStream = () => {
@@ -57,8 +89,11 @@ const ScanView = {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function (e) {
-          previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview Gambar" class="scan-preview-image" style="max-width:100%; max-height:100%;" />`;
+        reader.onload = (e) => {
+          previewContainer.innerHTML = `
+            <img src="${e.target.result}" alt="Preview Gambar" id="uploaded-image" class="scan-preview-image" style="max-width:100%; max-height:100%;" />
+          `;
+          this.selectedImageElement = document.getElementById("uploaded-image");
         };
         reader.readAsDataURL(file);
       }
@@ -73,15 +108,19 @@ const ScanView = {
         previewContainer.innerHTML = `<video id="camera-preview" autoplay playsinline style="max-width:100%; max-height:100%;"></video>`;
         const videoElement = document.getElementById("camera-preview");
         videoElement.srcObject = stream;
+        this.selectedImageElement = null; // pastikan hanya upload yang digunakan
       } catch (error) {
         alert("Tidak dapat mengakses kamera: " + error.message);
       }
     });
 
-    // Jaga-jaga saat reload tab
-    window.addEventListener("beforeunload", stopVideoStream);
+    // Tombol Pilah
+    pilahButton.addEventListener("click", async () => {
+      await this.loadModel();
+      await this.classifyImage();
+    });
 
-    // Simpan fungsi stop agar bisa dipanggil di destroy()
+    window.addEventListener("beforeunload", stopVideoStream);
     this.stopVideoStream = stopVideoStream;
   },
 };
