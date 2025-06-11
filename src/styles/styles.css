@@ -15,7 +15,7 @@ body {
 }
 
 header {
-  background-color: lightskyblue;
+  background-color: #ffffff;
 }
 
 .main-header {
@@ -26,11 +26,16 @@ header {
   align-items: center;
 }
 
-.brand-name {
-  font-size: 1.125rem;
-  font-weight: bold;
+.brand-logo {
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  color: #333;
+}
+
+.logo-image {
+  width: 120px;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
 }
 
 .navigation-drawer {
@@ -89,13 +94,13 @@ header {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: auto; /* push to bottom */
+  margin-top: auto;
 }
 
 .nav-auth li a {
   display: block;
   padding: 6px 10px;
-  color: #0a9db0;
+  color: green;
   text-decoration: none;
 }
 
