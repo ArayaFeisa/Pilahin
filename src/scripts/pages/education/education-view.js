@@ -194,14 +194,18 @@ const EducationView = {
     });
 
     // See more buttons
-    document.getElementById('see-more-articles')?.addEventListener('click', () => {
+    document.getElementById('see-more-articles')?.addEventListener('click', (e) => {
       console.log('Load more articles');
       // Add logic to load more articles
+      e.preventDefault();
+      window.location.hash = '/article';
     });
 
-    document.getElementById('see-more-videos')?.addEventListener('click', () => {
+    document.getElementById('see-more-videos')?.addEventListener('click', (e) => {
       console.log('Load more videos');
       // Add logic to load more videos
+      e.preventDefault();
+      window.location.hash = '/videos';
     });
   },
 };
