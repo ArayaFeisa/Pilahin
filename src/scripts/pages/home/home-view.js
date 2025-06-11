@@ -28,7 +28,7 @@ const HomeView = {
             <p>Belajar jadi lebih seru lewat video dan artikel seputar lingkungan, daur ulang, dan gaya hidup berkelanjutan.</p>
           </div>
           <div class="feature-card">
-            <h3>Recycle Near Me</h3>
+            <h3>Recycle Near Mi</h3>
             <p>Cukup ketik lokasi, dan mulai berkontribusi langsung dari lingkungan sekitar.</p>
           </div>
           <div class="feature-card">
