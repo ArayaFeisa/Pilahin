@@ -5,6 +5,7 @@ class App {
   #content = null;
   #drawerButton = null;
   #navigationDrawer = null;
+  #currentPage = null; // Untuk melacak halaman aktif
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
@@ -28,7 +29,7 @@ class App {
         if (link.contains(event.target)) {
           this.#navigationDrawer.classList.remove('open');
         }
-      })
+      });
     });
   }
 
@@ -36,8 +37,16 @@ class App {
     const url = getActiveRoute();
     const page = routes[url];
 
+    // Jika ada halaman aktif sebelumnya, panggil destroy()
+    if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
+      this.#currentPage.destroy();
+    }
+
     this.#content.innerHTML = await page.render();
     await page.afterRender();
+
+    // Set halaman aktif sekarang
+    this.#currentPage = page;
   }
 }
 
