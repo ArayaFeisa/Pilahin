@@ -5,6 +5,7 @@ import recycle from '../pages/recycle/recycle';
 import article from '../pages/article/article';
 import videos from '../pages/videos/videos';
 import auth from '../pages/auth/auth';
+import changePassword from '../pages/change-password/change-password';
 
 const routes = {
   '/': home,
@@ -13,7 +14,8 @@ const routes = {
   '/recycle': recycle,
   '/article' : article,
   '/videos' : videos,
-  '/auth' : auth
+  '/auth' : auth,
+  '/change-password' : changePassword
 };
 
 export default routes;
