@@ -6,14 +6,11 @@ const AuthView = {
       <section class="auth-page">
         <div class="auth-container">
           <h1 class="auth-title">Welcome to Pilahin</h1>
-          
           <div class="auth-tabs">
             <button class="auth-tab active" id="login-tab">Login</button>
             <button class="auth-tab" id="register-tab">Register</button>
           </div>
-          
           <div class="auth-forms">
-            <!-- Login Form -->
             <form id="login-form" class="auth-form active">
               <div class="form-group">
                 <label for="login-email">Email</label>
@@ -25,8 +22,6 @@ const AuthView = {
               </div>
               <button type="submit" class="auth-btn">Login</button>
             </form>
-            
-            <!-- Register Form -->
             <form id="register-form" class="auth-form">
               <div class="form-group">
                 <label for="register-name">Full Name</label>
@@ -47,11 +42,9 @@ const AuthView = {
               <button type="submit" class="auth-btn">Register</button>
             </form>
           </div>
-          
           <div class="auth-divider">
             <span>OR</span>
           </div>
-          
           <button id="google-auth" class="google-auth-btn">
             <img src="/images/Google.png" alt="Google Logo" class="google-logo">
             Continue with Google
@@ -62,7 +55,6 @@ const AuthView = {
   },
 
   bindEvents() {
-    // Tab switching
     const loginTab = document.getElementById('login-tab');
     const registerTab = document.getElementById('register-tab');
     const loginForm = document.getElementById('login-form');
@@ -82,12 +74,10 @@ const AuthView = {
       loginForm.classList.remove('active');
     });
 
-    // Form submissions
     document.getElementById('login-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
-      // This will be handled in presenter
       document.dispatchEvent(new CustomEvent('loginAttempt', { 
         detail: { email, password } 
       }));
@@ -99,19 +89,15 @@ const AuthView = {
       const email = document.getElementById('register-email').value;
       const password = document.getElementById('register-password').value;
       const confirmPassword = document.getElementById('register-confirm').value;
-      
       if (password !== confirmPassword) {
         alert("Passwords don't match!");
         return;
       }
-      
-      // This will be handled in presenter
       document.dispatchEvent(new CustomEvent('registerAttempt', { 
         detail: { name, email, password } 
       }));
     });
 
-    // Google auth button
     document.getElementById('google-auth').addEventListener('click', () => {
       document.dispatchEvent(new CustomEvent('googleAuthAttempt'));
     });
@@ -121,14 +107,9 @@ const AuthView = {
     const errorElement = document.createElement('div');
     errorElement.className = 'auth-error';
     errorElement.textContent = message;
-    
     const container = document.querySelector('.auth-container');
     const existingError = document.querySelector('.auth-error');
-    
-    if (existingError) {
-      existingError.remove();
-    }
-    
+    if (existingError) existingError.remove();
     container.prepend(errorElement);
   },
 
@@ -136,16 +117,64 @@ const AuthView = {
     const successElement = document.createElement('div');
     successElement.className = 'auth-success';
     successElement.textContent = message;
-    
     const container = document.querySelector('.auth-container');
     const existingSuccess = document.querySelector('.auth-success');
-    
-    if (existingSuccess) {
-      existingSuccess.remove();
-    }
-    
+    if (existingSuccess) existingSuccess.remove();
     container.prepend(successElement);
   }
 };
 
+function updateNavUser(email) {
+  const username = email.split('@')[0];
+  const authLink = document.getElementById('auth-link');
+  const dropdownMenu = document.getElementById('user-dropdown-menu');
+
+  if (authLink) {
+    authLink.textContent = username;
+    authLink.href = '#';
+
+    // Hapus event sebelumnya (agar tidak menumpuk)
+    const newAuthLink = authLink.cloneNode(true);
+    authLink.parentNode.replaceChild(newAuthLink, authLink);
+
+    newAuthLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (dropdownMenu) {
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+      }
+    });
+  }
+
+  const logoutLink = document.getElementById('logout-link');
+  if (logoutLink) {
+    const newLogoutLink = logoutLink.cloneNode(true);
+    logoutLink.parentNode.replaceChild(newLogoutLink, logoutLink);
+
+    newLogoutLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userEmail');
+      resetNavUser();
+      window.location.hash = '#/';
+    });
+  }
+}
+
+function resetNavUser() {
+  const authLink = document.getElementById('auth-link');
+  const dropdownMenu = document.getElementById('user-dropdown-menu');
+
+  if (authLink) {
+    const newAuthLink = authLink.cloneNode(true);
+    authLink.parentNode.replaceChild(newAuthLink, authLink);
+
+    newAuthLink.textContent = 'Login / Register';
+    newAuthLink.href = '#/auth';
+
+    if (dropdownMenu) dropdownMenu.style.display = 'none';
+  }
+}
+
+
+export { updateNavUser, resetNavUser };
 export default AuthView;

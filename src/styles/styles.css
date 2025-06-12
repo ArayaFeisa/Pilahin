@@ -153,6 +153,18 @@ body {
   margin-top: 70px;
 }
 
+#user-dropdown-menu li a {
+  display: block;
+  padding: 8px 16px;
+  color: #333;
+  text-decoration: none;
+}
+
+#user-dropdown-menu li a:hover {
+  background-color: #f0f0f0;
+}
+
+
 /* Desktop (navbar horizontal) */
 @media screen and (min-width: 1000px) {
   .navigation-drawer {

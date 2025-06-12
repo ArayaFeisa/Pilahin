@@ -26,8 +26,15 @@
               <li><a href="#/recycle">Recycle</a></li>
             </ul>
             <ul class="nav-auth">
-              <li><a href="#/auth" class="auth-link">Login / Register</a></li>
-            </ul>
+  <li class="nav-user-dropdown" id="nav-user-dropdown" style="position: relative;">
+    <a href="#/auth" class="auth-link" id="auth-link">Login / Register</a>
+    <ul class="dropdown-menu" id="user-dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ccc; list-style: none; padding: 5px 0; z-index: 1000;">
+      <li><a href="#/change-password" id="change-password-link">Change Password</a></li>
+      <li><a href="#" id="logout-link">Logout</a></li>
+    </ul>
+  </li>
+</ul>
+
           </nav>
 
           <button id="drawer-button" class="drawer-button">☰</button>
