@@ -5,6 +5,7 @@ export default class RecyclePresenter {
   #map = null;
   #markerGroup = null;
   #userMarker = null;
+  #circle = null;
 
   async render() {
     return RecycleView.render();
@@ -14,7 +15,7 @@ export default class RecyclePresenter {
     const locateBtn = document.getElementById("locate-button");
     const mapContainer = document.getElementById("map-container");
 
-    this.#map = L.map(mapContainer).setView([-2.5489, 118.0149], 5); // Fokus peta Indonesia
+    this.#map = L.map(mapContainer).setView([-2.5489, 118.0149], 5); // Fokus awal peta Indonesia
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
@@ -34,46 +35,54 @@ export default class RecyclePresenter {
         async (position) => {
           const { latitude, longitude } = position.coords;
 
-          this.#map.setView([latitude, longitude], 14);
+          this.#map.setView([latitude, longitude], 13); // Zoom sesuai radius 15km
 
-          if (this.#userMarker) {
-            this.#map.removeLayer(this.#userMarker);
-          }
+          if (this.#userMarker) this.#map.removeLayer(this.#userMarker);
+          if (this.#circle) this.#map.removeLayer(this.#circle);
 
+          // Tambahkan marker dan lingkaran radius 15km
           this.#userMarker = L.marker([latitude, longitude])
             .addTo(this.#map)
             .bindPopup("Lokasimu sekarang")
             .openPopup();
 
-          // Bersihkan marker sebelumnya
+          this.#circle = L.circle([latitude, longitude], {
+            color: "#0a9db0",
+            fillColor: "#0a9db033",
+            fillOpacity: 0.4,
+            radius: 15000, // 15 km
+          }).addTo(this.#map);
+
           this.#markerGroup.clearLayers();
 
           try {
-            const banks = await OverpassAPI.fetchNearbyWasteBanks({ lat: latitude, lon: longitude });
+            const banks = await OverpassAPI.fetchNearbyWasteBanks({
+              lat: latitude,
+              lon: longitude,
+            });
 
             if (banks.length === 0) {
               alert("Tidak ditemukan bank sampah di sekitar lokasi Anda.");
             }
 
             banks.forEach((bank) => {
-  L.marker([bank.lat, bank.lon])
-    .addTo(this.#markerGroup)
-    .bindPopup(`<b>${bank.name}</b><br><pre>${JSON.stringify(bank.tags, null, 2)}</pre>`);
-});
-
+              L.marker([bank.lat, bank.lon])
+                .addTo(this.#markerGroup)
+                .bindPopup(`<b>${bank.name}</b>`);
+            });
           } catch (error) {
             console.error(error);
             alert("Gagal memuat data bank sampah. Coba lagi nanti.");
           }
 
           locateBtn.disabled = false;
-          locateBtn.textContent = "Recycle Lagi";
+          locateBtn.textContent = "Cari Lagi";
         },
         (error) => {
           console.error("Gagal mendapatkan lokasi:", error);
           alert("Gagal mendapatkan lokasi. Pastikan akses lokasi diizinkan.");
           locateBtn.disabled = false;
-          locateBtn.textContent = "Recycle";
+          locateBtn.textContent = "Cari";
         }
       );
     });
@@ -85,6 +94,7 @@ export default class RecyclePresenter {
       this.#map = null;
       this.#markerGroup = null;
       this.#userMarker = null;
+      this.#circle = null;
     }
   }
 }

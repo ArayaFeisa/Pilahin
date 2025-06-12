@@ -1,6 +1,6 @@
 const OverpassAPI = {
   async fetchNearbyWasteBanks({ lat, lon }) {
-    const radius = 600000;
+    const radius = 15000; // 15 km
     const query = `
       [out:json][timeout:25];
       (

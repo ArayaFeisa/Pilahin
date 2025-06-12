@@ -1,35 +1,49 @@
-/* src/styles/recycle.css */
-
 .recycle-section {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-top: 48px;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 80vh; /* Biar footer tetap di bawah */
+}
+
+.recycle-left {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 32px;
+  max-width: 400px;
 }
 
 .recycle-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #333;
 }
 
 .recycle-button {
-  padding: 10px 16px;
+  padding: 12px 24px;
   font-size: 1rem;
   border: none;
   background-color: #0a9db0;
   color: white;
-  border-radius: 6px;
+  border-radius: 50px;
   cursor: pointer;
   width: fit-content;
+  transition: background-color 0.3s ease;
 }
 
 .recycle-button:hover {
   background-color: #088798;
 }
 
+.recycle-right {
+  flex: 2;
+}
+
 #map-container {
-  height: 400px;
+  height: 500px;
   width: 100%;
   border: 2px solid #ccc;
   border-radius: 8px;
