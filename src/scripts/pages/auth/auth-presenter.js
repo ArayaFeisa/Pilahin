@@ -35,30 +35,32 @@ class AuthPresenter {
     document.addEventListener('googleAuthAttempt', () => {
       this.handleGoogleAuth();
     });
+
+    document.addEventListener('deleteAccountAttempt', () => {
+      this.handleDeleteAccount();
+    });
   }
 
   async handleLogin(email, password) {
-  try {
-    const { token } = await AuthApi.login(email, password);
+    try {
+      const { token } = await AuthApi.login(email, password);
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('userEmail', email);
 
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userEmail', email); // Simpan email untuk nav
+      AuthView.showSuccess('Login successful!');
+      updateNavUser(email);
 
-    AuthView.showSuccess('Login successful!');
-    updateNavUser(email); // Update navbar langsung setelah login
-
-    setTimeout(() => {
-      window.location.hash = '#/';
-    }, 1500);
-  } catch (error) {
-    AuthView.showError('Login failed: ' + error.message);
+      setTimeout(() => {
+        window.location.hash = '#/';
+      }, 1500);
+    } catch (error) {
+      AuthView.showError('Login failed: ' + error.message);
+    }
   }
-}
 
   async handleRegister(name, email, password) {
     try {
       await AuthApi.register(name, email, password);
-
       AuthView.showSuccess('Registration successful! Please login.');
       document.getElementById('login-tab').click();
     } catch (error) {
@@ -73,7 +75,6 @@ class AuthPresenter {
           client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
           callback: this.handleGoogleResponse.bind(this)
         });
-
         window.google.accounts.id.prompt();
       } else {
         throw new Error('Google authentication service is not available');
@@ -85,15 +86,26 @@ class AuthPresenter {
 
   handleGoogleResponse(response) {
     try {
-      // Verifikasi token dengan backend Anda jika diperlukan
       console.log('Google auth response:', response);
-
       AuthView.showSuccess('Google authentication successful!');
       setTimeout(() => {
         window.location.hash = '#/';
       }, 1500);
     } catch (error) {
       AuthView.showError('Google authentication failed: ' + error.message);
+    }
+  }
+
+  async handleDeleteAccount() {
+    try {
+      await AuthApi.deleteAccount();
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userEmail');
+      resetNavUser();
+      alert('Your account has been deleted.');
+      window.location.hash = '#/';
+    } catch (error) {
+      
     }
   }
 }

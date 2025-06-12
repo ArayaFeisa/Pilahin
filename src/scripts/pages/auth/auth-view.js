@@ -104,24 +104,35 @@ const AuthView = {
   },
 
   showError(message) {
-    const errorElement = document.createElement('div');
-    errorElement.className = 'auth-error';
-    errorElement.textContent = message;
-    const container = document.querySelector('.auth-container');
-    const existingError = document.querySelector('.auth-error');
-    if (existingError) existingError.remove();
-    container.prepend(errorElement);
-  },
-
-  showSuccess(message) {
-    const successElement = document.createElement('div');
-    successElement.className = 'auth-success';
-    successElement.textContent = message;
-    const container = document.querySelector('.auth-container');
-    const existingSuccess = document.querySelector('.auth-success');
-    if (existingSuccess) existingSuccess.remove();
-    container.prepend(successElement);
+  const container = document.querySelector('.auth-container');
+  if (!container) {
+    alert(message); // fallback jika container tidak ditemukan
+    return;
   }
+
+  const errorElement = document.createElement('div');
+  errorElement.className = 'auth-error';
+  errorElement.textContent = message;
+  const existingError = document.querySelector('.auth-error');
+  if (existingError) existingError.remove();
+  container.prepend(errorElement);
+},
+
+showSuccess(message) {
+  const container = document.querySelector('.auth-container');
+  if (!container) {
+    alert(message);
+    return;
+  }
+
+  const successElement = document.createElement('div');
+  successElement.className = 'auth-success';
+  successElement.textContent = message;
+  const existingSuccess = document.querySelector('.auth-success');
+  if (existingSuccess) existingSuccess.remove();
+  container.prepend(successElement);
+}
+
 };
 
 function updateNavUser(email) {
@@ -133,7 +144,6 @@ function updateNavUser(email) {
     authLink.textContent = username;
     authLink.href = '#';
 
-    // Hapus event sebelumnya (agar tidak menumpuk)
     const newAuthLink = authLink.cloneNode(true);
     authLink.parentNode.replaceChild(newAuthLink, authLink);
 
@@ -158,6 +168,20 @@ function updateNavUser(email) {
       window.location.hash = '#/';
     });
   }
+
+  const deleteAccountLink = document.getElementById('delete-account-link');
+  if (deleteAccountLink) {
+    const newDeleteLink = deleteAccountLink.cloneNode(true);
+    deleteAccountLink.parentNode.replaceChild(newDeleteLink, deleteAccountLink);
+
+    newDeleteLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const confirmed = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+      if (confirmed) {
+        document.dispatchEvent(new CustomEvent('deleteAccountAttempt'));
+      }
+    });
+  }
 }
 
 function resetNavUser() {
@@ -174,7 +198,6 @@ function resetNavUser() {
     if (dropdownMenu) dropdownMenu.style.display = 'none';
   }
 }
-
 
 export { updateNavUser, resetNavUser };
 export default AuthView;

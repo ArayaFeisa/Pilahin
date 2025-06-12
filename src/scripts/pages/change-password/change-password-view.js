@@ -16,7 +16,7 @@ const ChangePasswordView = {
             
             <div class="change-password-form-group">
               <label for="new-password">New Password</label>
-              <input type="password" id="new-password" name="new-password" required>
+              <input type="password" id="new-password" name="new-password" required minlength="6">
             </div>
             
             <button type="submit" class="change-password-button">Change Password</button>
@@ -35,16 +35,15 @@ const ChangePasswordView = {
     if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const newPassword = document.getElementById('new-password').value;
-        
+
         try {
-          // Here you would call your API to change the password
-          // await AuthApi.changePassword(email, newPassword);
+          await AuthApi.changePassword(email, newPassword);
           alert('Password changed successfully!');
           window.location.hash = '#/auth';
         } catch (error) {
-          alert(error.message);
+          alert(`Failed to change password: ${error.message}`);
         }
       });
     }

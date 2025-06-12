@@ -33,6 +33,50 @@ const AuthApi = {
     } else {
       throw new Error(result.message || 'Registration failed');
     }
+  },
+
+  async changePassword(email, password) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Unauthorized: No token found');
+    }
+
+    const response = await fetch(`${CONFIG.BASE_URL}profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const result = await response.json();
+    if (response.ok && result.status === 'success') {
+      return result;
+    } else {
+      throw new Error(result.message || 'Failed to change password');
+    }
+  },
+
+  async deleteAccount() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Unauthorized: No token found');
+    }
+
+    const response = await fetch(`${CONFIG.BASE_URL}profile`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+    if (response.ok && result.status === 'success') {
+      return result;
+    } else {
+      throw new Error(result.message || 'Failed to delete account');
+    }
   }
 };
 
