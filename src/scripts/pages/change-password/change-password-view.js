@@ -4,26 +4,26 @@ import AuthApi from "../../data/auth-api";
 const ChangePasswordView = {
   async render() {
     return `
-      <section class="auth-page">
-        <div class="auth-container">
-          <h1 class="auth-title">Change Password</h1>
+      <section class="change-password-page">
+        <div class="change-password-container">
+          <h1 class="change-password-title">Change Password</h1>
           
-          <form id="change-password-form" class="auth-form">
-            <div class="form-group">
+          <form id="change-password-form" class="change-password-form">
+            <div class="change-password-form-group">
               <label for="email">Email</label>
               <input type="email" id="email" name="email" required>
             </div>
             
-            <div class="form-group">
+            <div class="change-password-form-group">
               <label for="new-password">New Password</label>
               <input type="password" id="new-password" name="new-password" required>
             </div>
             
-            <button type="submit" class="auth-button">Change Password</button>
+            <button type="submit" class="change-password-button">Change Password</button>
           </form>
           
-          <div class="auth-footer">
-            <a href="#/" class="auth-link">Back</a>
+          <div class="change-password-footer">
+            <a href="#/" class="change-password-link">Back</a>
           </div>
         </div>
       </section>
