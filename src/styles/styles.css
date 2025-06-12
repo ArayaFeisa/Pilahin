@@ -15,12 +15,18 @@ body {
 }
 
 header {
-  background-color: #ffffff;
+  background-color: #fbfcfb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 0;
+  left: 0; 
+  right: 0;
+  z-index: 1000;
 }
 
 .main-header {
-  min-height: 90px;
-  padding-block: 20px;
+  min-height: 70px;
+  padding-block: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,7 +39,7 @@ header {
 }
 
 .logo-image {
-  width: 120px;
+  width: 100px;
   aspect-ratio: 16 / 9;
   object-fit: contain;
 }
@@ -44,7 +50,7 @@ header {
   left: 0;
   width: 200px;
   height: 100vh;
-  background-color: #fff;
+  background-color: #ffffff;
   box-shadow: 0 0 4px 2px #00000033;
   padding: 20px 10px;
   display: flex;
@@ -109,7 +115,20 @@ header {
 }
 
 .main-content {
-  padding-block: 20px;
+  margin-top: 70px;
+}
+
+.global-footer {
+  background-color: #096d7b; /* Slightly darker shade for distinction */
+  padding: 12px 0;
+  text-align: center;
+  color: white;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.global-footer p {
+  margin: 0;
 }
 
 /* Desktop (navbar horizontal) */
