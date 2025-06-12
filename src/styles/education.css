@@ -68,7 +68,7 @@
 /* Articles and News Section */
 .articles-news {
   padding: 3rem 1rem;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   background-color: #fafafa;
 }
