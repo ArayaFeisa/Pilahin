@@ -5,51 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="favicon.png" />
     <link rel="stylesheet" href="styles/styles.css" />
-
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  defer
-></script>
-
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
-
     <title>Pilahin</title>
   </head>
   <body>
-    <header>
-      <div class="main-header container">
-        <a class="brand-logo" href="#/">
-          <img src="/images/Pilahin.png" alt="Logo Pilahin" class="logo-image" />
-        </a>
+    <div class="page-wrapper">
+      <header>
+        <div class="main-header container">
+          <a class="brand-logo" href="#/">
+            <img src="/images/Pilahin.png" alt="Logo Pilahin" class="logo-image" />
+          </a>
 
-        <nav id="navigation-drawer" class="navigation-drawer">
-          <ul id="nav-list" class="nav-list">
-            <li><a href="#/">Home</a></li>
-            <li><a href="#/scan">Pilah</a></li>
-            <li><a href="#/education">Education</a></li>
-            <li><a href="#/recycle">Recycle</a></li>
-          </ul>
-          <ul class="nav-auth">
-            <li><a href="#/auth" class="auth-link">Login / Register</a></li>
-            <!-- <li><a href="#/register" class="auth-link">Register</a></li> -->
-          </ul>
-        </nav>
+          <nav id="navigation-drawer" class="navigation-drawer">
+            <ul id="nav-list" class="nav-list">
+              <li><a href="#/">Home</a></li>
+              <li><a href="#/scan">Pilah</a></li>
+              <li><a href="#/education">Education</a></li>
+              <li><a href="#/recycle">Recycle</a></li>
+            </ul>
+            <ul class="nav-auth">
+              <li><a href="#/auth" class="auth-link">Login / Register</a></li>
+            </ul>
+          </nav>
 
-        <button id="drawer-button" class="drawer-button">☰</button>
-      </div>
-    </header>
+          <button id="drawer-button" class="drawer-button">☰</button>
+        </div>
+      </header>
 
-    <main id="main-content" class="main-content"></main>
+      <main id="main-content" class="main-content"></main>
 
-    <footer class="global-footer">
-      <div class="footer-bottom">
-        <p>© 2025 Pilahin. All rights reserved.</p>
-      </div>
-    </footer>
+      <footer class="global-footer">
+        <div class="footer-bottom">
+          <p>© 2025 Pilahin. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>
