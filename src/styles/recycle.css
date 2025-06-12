@@ -5,7 +5,9 @@
   margin-top: 48px;
   justify-content: center;
   align-items: flex-start;
-  min-height: 80vh; /* Biar footer tetap di bawah */
+  min-height: 80vh;
+  padding-top: 52px;
+  padding-bottom: 32px;
 }
 
 .recycle-left {
@@ -14,6 +16,7 @@
   flex-direction: column;
   gap: 16px;
   max-width: 400px;
+  padding: 0 16px; 
 }
 
 .recycle-title {
@@ -40,6 +43,7 @@
 
 .recycle-right {
   flex: 2;
+  padding: 0 16px;
 }
 
 #map-container {
@@ -47,4 +51,22 @@
   width: 100%;
   border: 2px solid #ccc;
   border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .recycle-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .recycle-left,
+  .recycle-right {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  #map-container {
+    height: 300px;
+  }
 }
