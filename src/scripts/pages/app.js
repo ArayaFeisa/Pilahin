@@ -21,7 +21,10 @@ class App {
     });
 
     document.body.addEventListener('click', (event) => {
-      if (!this.#navigationDrawer.contains(event.target) && !this.#drawerButton.contains(event.target)) {
+      if (
+        !this.#navigationDrawer.contains(event.target) &&
+        !this.#drawerButton.contains(event.target)
+      ) {
         this.#navigationDrawer.classList.remove('open');
       }
 
@@ -34,31 +37,36 @@ class App {
   }
 
   async renderPage() {
-  try {
-    const url = getActiveRoute();
-    const page = routes[url];
+    try {
+      const url = getActiveRoute();
+      const page = routes[url];
 
-    // Jika ada halaman aktif sebelumnya, panggil destroy()
-    if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
-      this.#currentPage.destroy();
+      // Hancurkan halaman sebelumnya jika ada
+      if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
+        this.#currentPage.destroy();
+      }
+
+      // Jika halaman tidak ditemukan, redirect ke '/'
+      if (!page) {
+        window.location.hash = '/';
+        return;
+      }
+
+      // Render halaman baru
+      this.#content.innerHTML = await page.render();
+      await page.afterRender();
+
+      this.#currentPage = page;
+    } catch (error) {
+      console.error('Error rendering page:', error);
+      // Tampilkan feedback error yang informatif ke user
+      this.#content.innerHTML = `
+        <p style="text-align:center; color:red;">
+          Terjadi kesalahan saat memuat halaman.
+        </p>
+      `;
     }
-
-    // Tangani jika halaman tidak ditemukan
-    if (!page) {
-      window.location.hash = '/';
-      return;
-    }
-
-    // Render hanya sekali!
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
-
-    this.#currentPage = page;
-  } catch (error) {
-    console.error('Error rendering page:', error);
   }
-}
-
 }
 
 export default App;
