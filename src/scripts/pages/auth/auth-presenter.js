@@ -1,4 +1,5 @@
-import AuthView from "./auth-view";
+import AuthApi from "../../data/auth-api";
+import AuthView, { updateNavUser, resetNavUser } from "./auth-view";
 
 class AuthPresenter {
   constructor() {
@@ -15,7 +16,6 @@ class AuthPresenter {
   }
 
   initGoogleAuth() {
-    // Load Google API client library
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -35,20 +35,21 @@ class AuthPresenter {
     document.addEventListener('googleAuthAttempt', () => {
       this.handleGoogleAuth();
     });
+
+    document.addEventListener('deleteAccountAttempt', () => {
+      this.handleDeleteAccount();
+    });
   }
 
   async handleLogin(email, password) {
     try {
-      // Here call your backend API
-      // for now contoh aja
-      console.log('Login attempt with:', email, password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // On successful login
+      const { token } = await AuthApi.login(email, password);
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('userEmail', email);
+
       AuthView.showSuccess('Login successful!');
-      // Redirect to home page after a delay
+      updateNavUser(email);
+
       setTimeout(() => {
         window.location.hash = '#/';
       }, 1500);
@@ -59,15 +60,8 @@ class AuthPresenter {
 
   async handleRegister(name, email, password) {
     try {
-      // Here you  call your backend API
-      console.log('Register attempt with:', name, email, password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // On successful registration
+      await AuthApi.register(name, email, password);
       AuthView.showSuccess('Registration successful! Please login.');
-      // Switch to login tab
       document.getElementById('login-tab').click();
     } catch (error) {
       AuthView.showError('Registration failed: ' + error.message);
@@ -76,13 +70,11 @@ class AuthPresenter {
 
   handleGoogleAuth() {
     try {
-      // Initialize Google Auth
       if (window.google) {
         window.google.accounts.id.initialize({
           client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
           callback: this.handleGoogleResponse.bind(this)
         });
-        
         window.google.accounts.id.prompt();
       } else {
         throw new Error('Google authentication service is not available');
@@ -94,18 +86,26 @@ class AuthPresenter {
 
   handleGoogleResponse(response) {
     try {
-      // Here you  verify the credential with your backend
       console.log('Google auth response:', response);
-      
-      // Simulate successful authentication
       AuthView.showSuccess('Google authentication successful!');
-      
-      // Redirect to home page after a delay
       setTimeout(() => {
         window.location.hash = '#/';
       }, 1500);
     } catch (error) {
       AuthView.showError('Google authentication failed: ' + error.message);
+    }
+  }
+
+  async handleDeleteAccount() {
+    try {
+      await AuthApi.deleteAccount();
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userEmail');
+      resetNavUser();
+      alert('Your account has been deleted.');
+      window.location.hash = '#/';
+    } catch (error) {
+      
     }
   }
 }

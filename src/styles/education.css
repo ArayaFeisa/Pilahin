@@ -1,9 +1,10 @@
 /* Education Page Styles */
 
 .eco-education {
-  padding: 2rem 1rem;
+  padding: 5rem 1rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .eco-education-content {
@@ -15,14 +16,13 @@
 
 .eco-education-image {
   flex: 1;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .eco-education-image img {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .eco-education-text {
@@ -33,7 +33,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   color: #2d5016;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   line-height: 1.2;
 }
 
@@ -48,6 +48,7 @@
 .section-header {
   text-align: center;
   margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .section-title {
@@ -67,17 +68,31 @@
 
 /* Articles and News Section */
 .articles-news {
+  position: relative;
   padding: 3rem 1rem;
-  /* max-width: 1200px; */
+  max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
+}
+
+.articles-news::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100%;
   background-color: #fafafa;
+  z-index: -1;
 }
 
 .articles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .article-card {
@@ -87,6 +102,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   cursor: pointer;
+  max-width: 100%;
 }
 
 .article-card:hover {
@@ -131,13 +147,15 @@
   padding: 3rem 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .videos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .video-card {
@@ -147,6 +165,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   cursor: pointer;
+  max-width: 100%;
 }
 
 .video-card:hover {
@@ -209,19 +228,10 @@
   margin-bottom: 1rem;
 }
 
-.video-duration {
-  font-size: 0.85rem;
-  color: #4a7c59;
-  font-weight: 500;
-  background: #e8f5e8;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  display: inline-block;
-}
-
 /* See More Button */
 .see-more-container {
   text-align: center;
+  padding: 0 1rem;
 }
 
 .see-more-btn {
@@ -241,6 +251,112 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(74, 124, 89, 0.4);
   background: linear-gradient(135deg, #3d6b4a, #5a8a66);
+}
+
+/* Error Section */
+.error-section {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.error-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.error-section p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+/* Modal Styles */
+.content-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  overflow-y: auto;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 2% auto;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: #4a7c59;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Article and Video Footer Styles */
+.article-footer,
+.video-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.see-detail-link {
+  color: #4a7c59;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.see-detail-link:hover {
+  color: #2d5016;
+  transform: translateX(3px);
+}
+
+.see-detail-link::after {
+  content: "→";
+  margin-left: 5px;
+  transition: all 0.3s ease;
+}
+
+.see-detail-link:hover::after {
+  transform: translateX(3px);
 }
 
 /* Responsive Design */
@@ -269,6 +385,12 @@
   .video-card {
     margin: 0;
   }
+
+  .modal-content {
+    width: 90%;
+    margin: 10% auto;
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -291,6 +413,12 @@
   
   .article-content,
   .video-content {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 15% auto;
     padding: 1rem;
   }
 }
