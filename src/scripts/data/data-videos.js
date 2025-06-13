@@ -7,7 +7,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video1.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink1"
+      externalUrl: "https://www.youtube.com/watch?v=tVuNnac7m0o"
     }
   },
   {
@@ -18,7 +18,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video2.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink2"
+      externalUrl: "https://www.youtube.com/watch?v=GLGcpseaQyc"
     }
   },
   {
@@ -29,7 +29,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video3.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink3"
+      externalUrl: "https://www.youtube.com/watch?v=ZXkPVAjU89E"
     }
   },
   {
@@ -40,7 +40,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video4.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink4"
+      externalUrl: "https://www.youtube.com/watch?v=_hAv9wrPAvc"
     }
   },
   {
@@ -51,7 +51,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video5.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink5"
+      externalUrl: "https://www.youtube.com/watch?v=Zaz0bb4KceM"
     }
   },
   {
@@ -62,7 +62,7 @@ export const localVideos = [
       thumbnails: {
         medium: { url: "/images/video6.jpg" }
       },
-      externalUrl: "https://www.youtube.com/watch?v=contohlink6"
+      externalUrl: "https://www.youtube.com/watch?v=udFHiISQveQ"
     }
   }
 ];
