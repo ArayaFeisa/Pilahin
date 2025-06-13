@@ -20,10 +20,8 @@ const EducationView = {
   async render() {
     try {
       // Use Promise.allSettled to handle both API calls gracefully
-      const [articlesResult, videosResult] = await Promise.allSettled([
         this.getArticles(),
         this.getVideos()
-      ]);
 
       // Extract data from results, fallback to local data if needed
       const articles = articlesResult.status === 'fulfilled' 
