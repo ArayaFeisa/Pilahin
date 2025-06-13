@@ -10,27 +10,19 @@ const API_CONFIG = {
   YOUTUBE_API_URL: 'https://www.googleapis.com/youtube/v3/search'
 };
 
-// Cache for API responses to prevent repeated requests
-let articlesCache = null;
-let videosCache = null;
-let fetchingArticles = false;
-let fetchingVideos = false;
-
 const EducationView = {
   async render() {
     try {
-      // Use Promise.allSettled to handle both API calls gracefully
-        this.getArticles(),
-        this.getVideos()
+      // Fetch data from APIs with fallback to local data
+      const articles = await this.fetchArticles().catch((error) => {
+        console.error('Using local articles due to API error:', error);
+        return localArticles.slice(0, 3);
+      });
 
-      // Extract data from results, fallback to local data if needed
-      const articles = articlesResult.status === 'fulfilled' 
-        ? articlesResult.value 
-        : localArticles.slice(0, 3);
-
-      const videos = videosResult.status === 'fulfilled' 
-        ? videosResult.value 
-        : localVideos.slice(0, 3);
+      const videos = await this.fetchVideos().catch((error) => {
+        console.error('Using local videos due to API error:', error);
+        return localVideos.slice(0, 3);
+      });
 
       return `
         <section id="eco-education" class="eco-education">
@@ -127,345 +119,172 @@ const EducationView = {
       return `
         <section class="error-section">
           <h2>Error Loading Content</h2>
-          <p>Maaf, kami tidak dapat memuat konten edukasi. Menggunakan data lokal sebagai gantinya.</p>
-          <div class="articles-grid">
-            ${localArticles.slice(0, 3).map(article => `
-              <article class="article-card">
-                <img src="${article.urlToImage || '/images/default-article.jpg'}" 
-                     alt="${article.title}" 
-                     class="article-image" />
-                <div class="article-content">
-                  <h3 class="article-title">${article.title}</h3>
-                  <p class="article-excerpt">${article.description}</p>
-                  <div class="article-footer">
-                    <span class="article-date">${new Date(article.publishedAt).toLocaleDateString('id-ID')}</span>
-                    <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="see-detail-link">Lihat Detail →</a>
-                  </div>
-                </div>
-              </article>
-            `).join('')}
-          </div>
+          <p>Sorry, we couldn't load the educational content. Please try again later.</p>
         </section>
       `;
     }
   },
 
-  // Unified method to get articles with caching and rate limiting
-  async getArticles() {
-    // Return cached data if available
-    if (articlesCache) {
-      return articlesCache;
-    }
-
-    // Prevent multiple simultaneous API calls
-    if (fetchingArticles) {
-      // Wait for the current fetch to complete
-      return new Promise((resolve) => {
-        const checkCache = () => {
-          if (articlesCache || !fetchingArticles) {
-            resolve(articlesCache || localArticles.slice(0, 3));
-          } else {
-            setTimeout(checkCache, 100);
-          }
-        };
-        checkCache();
-      });
-    }
-
-    try {
-      fetchingArticles = true;
-      const apiArticles = await this.fetchArticles();
-      articlesCache = apiArticles.length > 0 ? apiArticles : localArticles.slice(0, 3);
-      return articlesCache;
-    } catch (error) {
-      console.error('API failed, using local articles:', error);
-      articlesCache = localArticles.slice(0, 3);
-      return articlesCache;
-    } finally {
-      fetchingArticles = false;
-    }
-  },
-
-  // Unified method to get videos with caching and rate limiting
-  async getVideos() {
-    // Return cached data if available
-    if (videosCache) {
-      return videosCache;
-    }
-
-    // Prevent multiple simultaneous API calls
-    if (fetchingVideos) {
-      // Wait for the current fetch to complete
-      return new Promise((resolve) => {
-        const checkCache = () => {
-          if (videosCache || !fetchingVideos) {
-            resolve(videosCache || localVideos.slice(0, 3));
-          } else {
-            setTimeout(checkCache, 100);
-          }
-        };
-        checkCache();
-      });
-    }
-
-    try {
-      fetchingVideos = true;
-      const apiVideos = await this.fetchVideos();
-      videosCache = apiVideos.length > 0 ? apiVideos : localVideos.slice(0, 3);
-      return videosCache;
-    } catch (error) {
-      console.error('API failed, using local videos:', error);
-      videosCache = localVideos.slice(0, 3);
-      return videosCache;
-    } finally {
-      fetchingVideos = false;
-    }
-  },
-
   async fetchArticles() {
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
     try {
-      const query = 'pemilahan+sampah+OR+daur+ulang+OR+recycling+OR+"zero+waste"';
+      // More focused query for Indonesian waste management content
+      const query = 'pemilahan+sampah+OR+daur+ulang+OR+recycling+OR+"zero+waste"+language:id';
       const response = await fetch(
-        `${API_CONFIG.NEWS_API_URL}?q=${query}&sortBy=relevancy&pageSize=6&language=id&apiKey=${API_CONFIG.NEWS_API_KEY}`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
+        `${API_CONFIG.NEWS_API_URL}?q=${query}&sortBy=relevancy&pageSize=3&apiKey=${API_CONFIG.NEWS_API_KEY}`
       );
       
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        throw new Error(`News API request failed with status ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`News API request failed with status ${response.status}`);
       
       const data = await response.json();
       
-      if (!data.articles || data.articles.length === 0) {
-        console.log('No articles found in API response');
-        return [];
+      if (!data.articles) {
+        console.log('No articles found in API response, using local data');
+        return localArticles.slice(0, 3);
       }
       
-      // Filter and clean articles
-      const filteredArticles = data.articles
-        .filter(article => {
-          if (!article.title || !article.description) return false;
-          
-          const title = article.title.toLowerCase();
-          const description = article.description.toLowerCase();
-          
-          return (title.includes('sampah') || 
-                 title.includes('daur ulang') || 
-                 title.includes('recycling') ||
-                 title.includes('zero waste') ||
-                 description.includes('sampah') ||
-                 description.includes('daur ulang') ||
-                 description.includes('recycling'));
-        })
-        .map(article => ({
-          ...article,
-          title: article.title.substring(0, 100), // Limit title length
-          description: article.description.substring(0, 150) // Limit description length
-        }));
+      // Simple relevance filtering
+      const filteredArticles = data.articles.filter(article => {
+        const title = article.title?.toLowerCase() || '';
+        const description = article.description?.toLowerCase() || '';
+        return (title.includes('sampah') || 
+               title.includes('daur ulang') || 
+               title.includes('recycling') ||
+               title.includes('zero waste') ||
+               description.includes('sampah') ||
+               description.includes('daur ulang'));
+      });
       
       return filteredArticles.slice(0, 3);
     } catch (error) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        console.error('Articles API request timed out');
-      } else {
-        console.error('Error fetching articles:', error);
-      }
-      throw error;
+      console.error('Error fetching articles:', error);
+      throw error; // Throw to trigger local fallback
     }
   },
 
   async fetchVideos() {
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
     try {
-      const query = 'pemilahan+sampah+daur+ulang+indonesia';
+      // Focused query for professional Indonesian waste management videos
+      const query = 'pemilahan+sampah+OR+daur+ulang+OR+recycling+OR+"zero+waste"+bahasa+indonesia';
       const response = await fetch(
-        `${API_CONFIG.YOUTUBE_API_URL}?part=snippet&maxResults=6&q=${query}&type=video&videoDuration=medium&relevanceLanguage=id&key=${API_CONFIG.YOUTUBE_API_KEY}`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
+        `${API_CONFIG.YOUTUBE_API_URL}?part=snippet&maxResults=3&q=${query}&type=video&videoDuration=medium&key=${API_CONFIG.YOUTUBE_API_KEY}`
       );
       
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        throw new Error(`YouTube API request failed with status ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`YouTube API request failed with status ${response.status}`);
       
       const data = await response.json();
       
-      if (!data.items || data.items.length === 0) {
-        console.log('No videos found in API response');
-        return [];
+      if (!data.items) {
+        console.log('No videos found in API response, using local data');
+        return localVideos.slice(0, 3);
       }
       
-      // Filter and clean videos
-      const filteredVideos = data.items
-        .filter(video => {
-          if (!video.snippet?.title) return false;
-          
-          const title = video.snippet.title.toLowerCase();
-          const description = (video.snippet.description || '').toLowerCase();
-          
-          // Filter out children's content
-          if (title.includes('anak') || title.includes('kartun') || 
-              title.includes('kids') || title.includes('children')) {
-            return false;
-          }
-          
-          return (title.includes('sampah') || 
-                 title.includes('daur ulang') ||
-                 title.includes('recycling') ||
-                 title.includes('lingkungan') ||
-                 description.includes('sampah') ||
-                 description.includes('daur ulang'));
-        })
-        .map(video => ({
-          ...video,
-          snippet: {
-            ...video.snippet,
-            title: video.snippet.title.substring(0, 80), // Limit title length
-            description: (video.snippet.description || '').substring(0, 100) // Limit description length
-          }
-        }));
+      // Simple quality filtering
+      const filteredVideos = data.items.filter(video => {
+        const title = video.snippet?.title?.toLowerCase() || '';
+        const description = video.snippet?.description?.toLowerCase() || '';
+        return !title.includes('anak') && 
+               !title.includes('kartun') &&
+               (title.includes('sampah') || 
+                title.includes('daur ulang') ||
+                title.includes('recycling') ||
+                description.includes('sampah') ||
+                description.includes('daur ulang'));
+      });
       
       return filteredVideos.slice(0, 3);
     } catch (error) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        console.error('Videos API request timed out');
-      } else {
-        console.error('Error fetching videos:', error);
-      }
-      throw error;
+      console.error('Error fetching videos:', error);
+      throw error; // Throw to trigger local fallback
     }
   },
 
   bindEvents() {
-    // Use setTimeout to ensure DOM is ready
-    setTimeout(() => {
-      // Article card click - open external URL
-      document.querySelectorAll('.article-card').forEach(card => {
-        const link = card.querySelector('.see-detail-link');
-        if (link) {
-          card.addEventListener('click', (e) => {
-            if (!e.target.closest('.see-detail-link')) {
-              window.open(link.href, '_blank', 'noopener,noreferrer');
-            }
-          });
+    // Article card click - open external URL
+    document.querySelectorAll('.article-card').forEach(card => {
+      const link = card.querySelector('.see-detail-link');
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.see-detail-link')) {
+          window.open(link.href, '_blank', 'noopener,noreferrer');
         }
       });
+    });
 
-      // Video card click - show modal with video player
-      document.querySelectorAll('.video-card').forEach(card => {
-        const videoId = card.getAttribute('data-video-id');
-        if (videoId) {
-          card.addEventListener('click', (e) => {
-            if (!e.target.closest('.see-detail-link')) {
-              this.showVideoModal({
-                videoId: videoId,
-                title: card.querySelector('.video-title')?.textContent || '',
-                description: card.querySelector('.video-description')?.textContent || ''
-              });
-            }
-          });
-        }
-      });
-
-      // See more buttons
-      const seeMoreArticles = document.getElementById('see-more-articles');
-      if (seeMoreArticles) {
-        seeMoreArticles.addEventListener('click', (e) => {
-          e.preventDefault();
-          window.location.hash = '/article';
-        });
-      }
-
-      const seeMoreVideos = document.getElementById('see-more-videos');
-      if (seeMoreVideos) {
-        seeMoreVideos.addEventListener('click', (e) => {
-          e.preventDefault();
-          window.location.hash = '/videos';
-        });
-      }
-
-      // Modal close button
-      const closeModal = document.querySelector('.close-modal');
-      if (closeModal) {
-        closeModal.addEventListener('click', () => {
-          this.hideModal();
-        });
-      }
-
-      // Close modal when clicking outside
-      const videoModal = document.getElementById('video-modal');
-      if (videoModal) {
-        videoModal.addEventListener('click', (e) => {
-          if (e.target === videoModal) {
-            this.hideModal();
+    // Video card click - show modal with video player
+    document.querySelectorAll('.video-card').forEach(card => {
+      const videoId = card.getAttribute('data-video-id');
+      if (videoId) {
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('.see-detail-link')) {
+            this.showVideoModal({
+              videoId: videoId,
+              title: card.querySelector('.video-title')?.textContent || '',
+              description: card.querySelector('.video-description')?.textContent || ''
+            });
           }
         });
       }
+    });
 
-      // Close modal with ESC key
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          this.hideModal();
-        }
-      });
-    }, 100);
+    // See more buttons
+    document.getElementById('see-more-articles')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '/article';
+    });
+
+    document.getElementById('see-more-videos')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '/videos';
+    });
+
+    // Modal close button
+    document.querySelector('.close-modal')?.addEventListener('click', () => {
+      this.hideModal();
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('video-modal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('video-modal')) {
+        this.hideModal();
+      }
+    });
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.hideModal();
+      }
+    });
   },
 
   showVideoModal(content) {
     const modal = document.getElementById('video-modal');
     const modalBody = document.getElementById('modal-body');
     
-    if (modal && modalBody) {
-      modalBody.innerHTML = `
-        <div class="video-container">
-          <iframe width="100%" height="400" 
-                  src="https://www.youtube.com/embed/${content.videoId}?autoplay=1" 
-                  frameborder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen></iframe>
-        </div>
-        <h2>${content.title}</h2>
-        ${content.description ? `<p class="video-description">${content.description}</p>` : ''}
-      `;
-      
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
+    modalBody.innerHTML = `
+      <div class="video-container">
+        <iframe width="100%" height="400" 
+                src="https://www.youtube.com/embed/${content.videoId}?autoplay=1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+      </div>
+      <h2>${content.title}</h2>
+      ${content.description ? `<p class="video-description">${content.description}</p>` : ''}
+    `;
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
   },
 
   hideModal() {
     const modal = document.getElementById('video-modal');
-    if (modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-      
-      // Stop any playing videos
-      const iframe = document.querySelector('.video-container iframe');
-      if (iframe) {
-        iframe.src = '';
-      }
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Stop any playing videos
+    const iframe = document.querySelector('.video-container iframe');
+    if (iframe) {
+      iframe.src = '';
     }
   },
 

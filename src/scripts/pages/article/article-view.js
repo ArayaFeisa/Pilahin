@@ -15,7 +15,7 @@ const ArticlesView = {
     }
     
     // Ensure only 5 articles are shown
-    const displayedArticles = articles.slice(0, 5);
+    const displayedArticles = articles.slice(0, 6);
     
     return `
       <section class="articles-page">
@@ -23,7 +23,6 @@ const ArticlesView = {
           <h1 class="articles-title">Article and News</h1>
           <p class="articles-subtitle">Stay updated with the latest news and articles about waste management and environmental protection</p>
         </div>
-        
         <div class="articles-grid">
           ${displayedArticles.map(article => `
             <article class="article-card" data-id="${article.id}">
@@ -48,7 +47,7 @@ const ArticlesView = {
     const NEWS_API_URL = 'https://newsapi.org/v2/everything';
     
     const query = 'waste management OR recycling OR "environmental protection"';
-    const pageSize = 5; // Changed from 6 to 5 to only request 5 articles
+    const pageSize = 6; // Changed from 6 to 5 to only request 5 articles
     const sortBy = 'publishedAt';
     
     const response = await fetch(
@@ -65,7 +64,7 @@ const ArticlesView = {
 
   formatApiArticles(apiArticles) {
     // Take only first 5 articles if somehow more were returned
-    return apiArticles.slice(0, 5).map((article, index) => ({
+    return apiArticles.slice(0, 6).map((article, index) => ({
       id: `api-${index}`,
       title: article.title,
       excerpt: article.description || 'No description available',
@@ -82,7 +81,7 @@ const ArticlesView = {
 
   formatLocalArticles(localArticles) {
     // Take only first 5 articles from local data
-    return localArticles.slice(0, 5).map((article, index) => ({
+    return localArticles.slice(0, 6).map((article, index) => ({
       id: `local-${index}`,
       title: article.title,
       excerpt: article.description,

@@ -34,31 +34,31 @@ class App {
   }
 
   async renderPage() {
-    try {
-      const url = getActiveRoute();
-      const page = routes[url];
+  try {
+    const url = getActiveRoute();
+    const page = routes[url];
 
     // Jika ada halaman aktif sebelumnya, panggil destroy()
     if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
       this.#currentPage.destroy();
     }
 
+    // Tangani jika halaman tidak ditemukan
+    if (!page) {
+      window.location.hash = '/';
+      return;
+    }
+
+    // Render hanya sekali!
     this.#content.innerHTML = await page.render();
     await page.afterRender();
 
-    // Set halaman aktif sekarang
     this.#currentPage = page;
-      if (!page) {
-        window.location.hash = '/';
-        return;
-      }
-
-      this.#content.innerHTML = await page.render();
-      await page.afterRender();
-    } catch (error) {
-      console.error('Error rendering page:', error);
-    }
+  } catch (error) {
+    console.error('Error rendering page:', error);
   }
+}
+
 }
 
 export default App;
