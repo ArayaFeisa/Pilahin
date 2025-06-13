@@ -10,22 +10,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     navigationDrawer: document.querySelector('#navigation-drawer'),
   });
 
+  // Render awal
   await app.renderPage();
+  handleNavbarUser();
 
-  const storedEmail = localStorage.getItem('userEmail');
-  if (storedEmail) {
-    updateNavUser(storedEmail); // Panggil ulang setelah renderPage
-  }
-
+  // Re-render saat navigasi hash berubah
   window.addEventListener('hashchange', async () => {
     await app.renderPage();
-
-    const storedEmail = localStorage.getItem('userEmail');
-    if (storedEmail) {
-      updateNavUser(storedEmail); // Pastikan navbar tetap benar setelah navigasi
-    } else {
-      resetNavUser(); // Jika sudah logout, reset
-    }
+    handleNavbarUser();
   });
 });
 
+function handleNavbarUser() {
+  const storedEmail = localStorage.getItem('userEmail');
+  if (storedEmail) {
+    updateNavUser(storedEmail);
+  } else {
+    resetNavUser();
+  }
+}

@@ -5,7 +5,7 @@ class App {
   #content = null;
   #drawerButton = null;
   #navigationDrawer = null;
-  #currentPage = null; // Untuk melacak halaman aktif
+  #currentPage = null;
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
