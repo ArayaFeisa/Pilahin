@@ -34,8 +34,9 @@ class App {
   }
 
   async renderPage() {
-    const url = getActiveRoute();
-    const page = routes[url];
+    try {
+      const url = getActiveRoute();
+      const page = routes[url];
 
     // Jika ada halaman aktif sebelumnya, panggil destroy()
     if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
@@ -47,6 +48,16 @@ class App {
 
     // Set halaman aktif sekarang
     this.#currentPage = page;
+      if (!page) {
+        window.location.hash = '/';
+        return;
+      }
+
+      this.#content.innerHTML = await page.render();
+      await page.afterRender();
+    } catch (error) {
+      console.error('Error rendering page:', error);
+    }
   }
 }
 

@@ -38,6 +38,35 @@ const ScanView = {
     `;
   },
 
+  async loadModel() {
+    if (!this.model) {
+      this.model = await window.tf.loadGraphModel('/model/model.json');
+    }
+  },
+
+  async classifyImage() {
+    if (!this.selectedImageElement || !this.model) {
+      alert("Silakan upload gambar terlebih dahulu!");
+      return;
+    }
+
+    const img = this.selectedImageElement;
+    const tensor = window.tf.browser.fromPixels(img)
+      .resizeNearestNeighbor([150, 150]) // sesuai input model
+      .toFloat()
+      .expandDims(0); // jadi batch [1, 150, 150, 3]
+
+    const prediction = this.model.predict(tensor);
+    const predictionData = await prediction.data();
+
+    // Asumsi: output model adalah [organik, non organik, bahan berbahaya]
+    const classes = ["Organik", "Non-Organik", "Bahan Berbahaya"];
+    const maxIndex = predictionData.indexOf(Math.max(...predictionData));
+    const label = classes[maxIndex];
+
+    document.getElementById("result-text").innerText = `Hasil deteksi: ${label}`;
+  },
+
   bindEvents() {
     const uploadButton = document.getElementById("upload-button");
     const cameraButton = document.getElementById("camera-button");
@@ -184,7 +213,12 @@ const ScanView = {
       stopVideoStream();
     });
 
-    // Jaga-jaga saat reload tab atau navigasi keluar
+    // Tombol Pilah
+    pilahButton.addEventListener("click", async () => {
+      await this.loadModel();
+      await this.classifyImage();
+    });
+
     window.addEventListener("beforeunload", stopVideoStream);
   },
 
