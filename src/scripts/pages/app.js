@@ -5,7 +5,7 @@ class App {
   #content = null;
   #drawerButton = null;
   #navigationDrawer = null;
-  #currentPage = null; // Untuk melacak halaman aktif
+  #currentPage = null;
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
@@ -38,25 +38,25 @@ class App {
       const url = getActiveRoute();
       const page = routes[url];
 
-    // Jika ada halaman aktif sebelumnya, panggil destroy()
-    if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
-      this.#currentPage.destroy();
-    }
-
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
-
-    // Set halaman aktif sekarang
-    this.#currentPage = page;
+      // Jika halaman tidak ditemukan, redirect ke /
       if (!page) {
         window.location.hash = '/';
         return;
       }
 
+      // Hancurkan halaman sebelumnya
+      if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
+        this.#currentPage.destroy();
+      }
+
+      // Render dan afterRender halaman baru
       this.#content.innerHTML = await page.render();
       await page.afterRender();
+
+      this.#currentPage = page;
     } catch (error) {
       console.error('Error rendering page:', error);
+      this.#content.innerHTML = `<p style="text-align:center; color:red;">Terjadi kesalahan saat memuat halaman.</p>`;
     }
   }
 }

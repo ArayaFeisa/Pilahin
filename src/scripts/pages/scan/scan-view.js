@@ -1,5 +1,5 @@
 import "../../../styles/scan.css";
-import * as tf from '@tensorflow/tfjs'; // Import TensorFlow.js
+import * as tf from '@tensorflow/tfjs';
 
 const ScanView = {
   videoStream: null,
@@ -9,7 +9,8 @@ const ScanView = {
   model: null,
   isPredicting: false,
   animationFrameId: null,
-  classNames: ["Organik", "Non-Organik", "B3"], // Definisi classNames di sini
+  selectedImageElement: null,
+  classNames: ["Organik", "Non-Organik", "B3"],
 
   render() {
     return `
@@ -45,27 +46,28 @@ const ScanView = {
   },
 
   async classifyImage() {
-    if (!this.selectedImageElement || !this.model) {
-      alert("Silakan upload gambar terlebih dahulu!");
-      return;
-    }
+  if (!this.selectedImageElement || !this.model) {
+    alert("Silakan upload gambar terlebih dahulu!");
+    return;
+  }
 
-    const img = this.selectedImageElement;
-    const tensor = window.tf.browser.fromPixels(img)
-      .resizeNearestNeighbor([150, 150]) // sesuai input model
-      .toFloat()
-      .expandDims(0); // jadi batch [1, 150, 150, 3]
+  const img = this.selectedImageElement;
+  const tensor = tf.browser.fromPixels(img)
+    .resizeNearestNeighbor([150, 150])
+    .toFloat()
+    .expandDims(0);
 
-    const prediction = this.model.predict(tensor);
-    const predictionData = await prediction.data();
+  const prediction = this.model.predict(tensor);
+  const predictionData = await prediction.data();
 
-    // Asumsi: output model adalah [organik, non organik, bahan berbahaya]
-    const classes = ["Organik", "Non-Organik", "Bahan Berbahaya"];
-    const maxIndex = predictionData.indexOf(Math.max(...predictionData));
-    const label = classes[maxIndex];
+  const maxIndex = predictionData.indexOf(Math.max(...predictionData));
+  const label = this.classNames[maxIndex] || "Tidak Dikenali";
 
-    document.getElementById("result-text").innerText = `Hasil deteksi: ${label}`;
-  },
+  document.getElementById("result-text").innerText = `Hasil deteksi: ${label}`;
+
+  if (prediction.dispose) prediction.dispose();
+},
+
 
   bindEvents() {
     const uploadButton = document.getElementById("upload-button");
@@ -110,6 +112,9 @@ const ScanView = {
       }
       if (this.videoElement) {
         this.videoElement.style.display = 'none';
+        previewContainer.innerHTML = '';
+this.selectedImageElement = null;
+
         this.videoElement.srcObject = null;
       }
       if (this.canvasElement) {
@@ -132,85 +137,98 @@ const ScanView = {
 
     // Upload Button Click
     uploadButton.addEventListener("click", () => {
-      stopVideoStream();
-      fileInput.click();
-      pilahButton.style.display = 'block'; // Show Pilah button for upload
-      cameraButton.style.display = 'inline-block'; // Ensure camera button is visible
-      stopCameraButton.style.display = 'none'; // Hide stop button
-    });
+  stopVideoStream();
+  fileInput.value = ""; // Reset input agar bisa pilih file yg sama dua kali
+  previewContainer.innerHTML = ""; // Pastikan container bersih sebelum upload baru
+  this.selectedImageElement = null; // Reset
+  resultText.textContent = "Silakan pilih gambar untuk diproses.";
+  fileInput.click();
+});
+
 
     // File input change
     fileInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          stopVideoStream(); // Stop camera if it was running
-          const img = new Image();
-          img.onload = () => {
-            // Display uploaded image directly in the container, no canvas overlay yet
-            previewContainer.innerHTML = ''; // Clear video/canvas
-            img.style.maxWidth = '100%';
-            img.style.maxHeight = '100%';
-            img.style.display = 'block';
-            previewContainer.appendChild(img);
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      stopVideoStream(); // Hentikan kamera
+      const img = new Image();
+      img.onload = () => {
+  previewContainer.innerHTML = '';
+  img.style.maxWidth = '100%';
+  img.style.maxHeight = '100%';
+  img.style.display = 'block';
+  previewContainer.appendChild(img);
+
+  this.selectedImageElement = img;
+  resultText.textContent = "Gambar siap! Klik 'Pilah' untuk klasifikasi.";
+  pilahButton.style.display = 'block'; // Tampilkan tombol pilah segera
+};
+
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 
     // Camera Button Click
     cameraButton.addEventListener("click", async () => {
-      try {
-        stopVideoStream(); // Stop any existing stream/prediction
-        cameraButton.style.display = 'none'; // Hide camera button
-        stopCameraButton.style.display = 'inline-block'; // Show stop button
+  try {
+    stopVideoStream();
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-            facingMode: 'environment' // Prefer rear camera on mobile
-          }
-        });
-        this.videoStream = stream;
-        this.videoElement.srcObject = stream;
-        this.videoElement.style.display = 'block'; // Show video
+// Tambahkan ulang elemen video & canvas ke DOM
+previewContainer.innerHTML = '';
+previewContainer.appendChild(this.videoElement);
+previewContainer.appendChild(this.canvasElement);
 
-        // Wait for video metadata to load
-        await new Promise((resolve) => {
-          this.videoElement.onloadedmetadata = () => {
-            resolve();
-          };
-        });
+cameraButton.style.display = 'none';
+stopCameraButton.style.display = 'inline-block';
 
-        // Set canvas dimensions to match video
-        this.canvasElement.width = this.videoElement.videoWidth;
-        this.canvasElement.height = this.videoElement.videoHeight;
-        this.canvasElement.style.display = 'block'; // Show canvas
 
-        // Start prediction loop after model loads
-        if (this.model) {
-          this.isPredicting = true;
-          this.predictWebcam();
-          pilahButton.style.display = 'none'; // Hide pilah button for live scan
-        } else {
-          resultText.textContent = "Memuat model...";
-          // The presenter will handle model loading and calling startPrediction
-        }
+    await this.loadModel(); // Pastikan model sudah dimuat sebelum lanjut
 
-      } catch (error) {
-        console.error("Error accessing camera:", error);
-        alert(`Tidak dapat mengakses kamera: ${error.message}. Pastikan izin kamera diberikan.`);
-        stopVideoStream(); // Clean up if camera access fails
-      }
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 640 },
+        height: { ideal: 480 },
+        facingMode: 'environment',
+      },
     });
+
+    this.videoStream = stream;
+    this.videoElement.srcObject = stream;
+    this.videoElement.style.display = 'block';
+
+    await new Promise((resolve) => {
+      this.videoElement.onloadedmetadata = () => {
+        resolve();
+      };
+    });
+
+    this.canvasElement.width = this.videoElement.videoWidth;
+    this.canvasElement.height = this.videoElement.videoHeight;
+    this.canvasElement.style.display = 'block';
+
+    this.isPredicting = true;
+    this.predictWebcam();
+    pilahButton.style.display = 'none';
+  } catch (error) {
+    console.error("Error accessing camera:", error);
+    alert(`Tidak dapat mengakses kamera: ${error.message}`);
+    stopVideoStream();
+  }
+});
+
 
     // Stop Camera Button Click
     stopCameraButton.addEventListener('click', () => {
       stopVideoStream();
+      previewContainer.innerHTML = ''; // Bersihkan sisa gambar upload
+this.selectedImageElement = null;
+resultText.textContent = "Mengaktifkan kamera...";
+
     });
 
     // Tombol Pilah
@@ -278,15 +296,16 @@ const output = this.model.execute(expanded);
   },
 
   async processPrediction(prediction) {
-    // If your GraphModel returns an array of tensors, find the one with probabilities
-    // For a classification model, it's usually a single tensor.
-    const outputTensor = Array.isArray(prediction) ? prediction[0] : prediction;
+  const outputTensor = Array.isArray(prediction) ? prediction[0] : prediction;
+  const values = await outputTensor.data();
 
-    const values = await outputTensor.data();
-    const classId = values.indexOf(Math.max(...values));
-    const probability = values[classId];
-    return [this.classNames[classId], probability];
-  },
+  if (!values || values.length === 0) return ["Tidak Dikenali", 0];
+
+  const maxIdx = values.indexOf(Math.max(...values));
+  const label = this.classNames[maxIdx] || "Tidak Dikenali";
+  return [label, values[maxIdx]];
+},
+
 
   drawBoundingBoxAndLabel(label, score) {
     if (!this.ctx || !this.canvasElement) return;
