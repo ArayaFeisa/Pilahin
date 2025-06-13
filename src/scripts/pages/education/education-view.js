@@ -4,8 +4,8 @@ import { localVideos } from "../../data/data-videos";
 
 // API Configuration
 const API_CONFIG = {
-  NEWS_API_KEY: '7a32c925962241139c4944adc150c2b9',
-  YOUTUBE_API_KEY: 'AIzaSyD7nU8LN81uEHs32qBCRvNwaPvxXWnNuTc', 
+  NEWS_API_KEY: 'secret',
+  YOUTUBE_API_KEY: 'secret', 
   NEWS_API_URL: 'https://newsapi.org/v2/everything',
   YOUTUBE_API_URL: 'https://www.googleapis.com/youtube/v3/search'
 };
