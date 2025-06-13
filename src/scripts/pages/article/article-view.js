@@ -1,9 +1,21 @@
 import "../../../styles/article.css";
+import { localArticles } from "../../data/data-articles";
 
 const ArticlesView = {
   async render() {
-    // Fetch articles from NewsAPI (example)
-    const articles = await this.fetchArticles();
+    let articles = [];
+    
+    try {
+      // Try to fetch from NewsAPI first
+      articles = await this.fetchArticlesFromAPI();
+    } catch (error) {
+      console.error("Failed to fetch articles from API, using local data:", error);
+      // Fallback to local data if API fails
+      articles = this.formatLocalArticles(localArticles);
+    }
+    
+    // Ensure only 5 articles are shown
+    const displayedArticles = articles.slice(0, 5);
     
     return `
       <section class="articles-page">
@@ -13,9 +25,9 @@ const ArticlesView = {
         </div>
         
         <div class="articles-grid">
-          ${articles.map(article => `
+          ${displayedArticles.map(article => `
             <article class="article-card" data-id="${article.id}">
-              <img src="${article.image}" alt="${article.title}" class="article-image" />
+              <img src="${article.image}" alt="${article.title}" class="article-image" loading="lazy" />
               <div class="article-content">
                 <span class="article-source">${article.source}</span>
                 <h3 class="article-title">${article.title}</h3>
@@ -31,29 +43,58 @@ const ArticlesView = {
     `;
   },
 
-  async fetchArticles() {
-    // contoh aja
-    return [
-      {
-        id: '1',
-        title: 'How to Reduce Plastic Waste in Your Daily Life',
-        excerpt: 'Practical tips for minimizing plastic usage and proper recycling methods to help the environment.',
-        source: 'Eco News Network',
-        date: 'May 15, 2024',
-        image: 'https://images.unsplash.com/photo-1585011650347-c59dbef5f732',
-        url: 'https://example.com/article1'
-      },
-      {
-        id: '2',
-        title: 'The Future of Waste Management: Smart Solutions',
-        excerpt: 'Exploring innovative technologies that are transforming how we handle and process waste globally.',
-        source: 'Green Tech Magazine',
-        date: 'May 12, 2024',
-        image: 'https://images.unsplash.com/photo-1503596476-1c12a8ba09a9',
-        url: 'https://example.com/article2'
-      },
-      // ntar ditambah (x)
-    ];
+  async fetchArticlesFromAPI() {
+    const NEWS_API_KEY = '7a32c925962241139c4944adc150c2b9';
+    const NEWS_API_URL = 'https://newsapi.org/v2/everything';
+    
+    const query = 'waste management OR recycling OR "environmental protection"';
+    const pageSize = 5; // Changed from 6 to 5 to only request 5 articles
+    const sortBy = 'publishedAt';
+    
+    const response = await fetch(
+      `${NEWS_API_URL}?q=${encodeURIComponent(query)}&pageSize=${pageSize}&sortBy=${sortBy}&apiKey=${NEWS_API_KEY}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`News API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return this.formatApiArticles(data.articles);
+  },
+
+  formatApiArticles(apiArticles) {
+    // Take only first 5 articles if somehow more were returned
+    return apiArticles.slice(0, 5).map((article, index) => ({
+      id: `api-${index}`,
+      title: article.title,
+      excerpt: article.description || 'No description available',
+      source: article.source?.name || 'Unknown Source',
+      date: new Date(article.publishedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      image: article.urlToImage || '/images/article-placeholder.jpg',
+      url: article.url
+    }));
+  },
+
+  formatLocalArticles(localArticles) {
+    // Take only first 5 articles from local data
+    return localArticles.slice(0, 5).map((article, index) => ({
+      id: `local-${index}`,
+      title: article.title,
+      excerpt: article.description,
+      source: 'Local Database',
+      date: new Date(article.publishedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      image: article.urlToImage || '/images/article-placeholder.jpg',
+      url: article.url
+    }));
   },
 
   bindEvents() {
@@ -66,13 +107,21 @@ const ArticlesView = {
   },
 
   async showArticleDetail(articleId) {
-    const articles = await this.fetchArticles();
-    const article = articles.find(a => a.id === articleId);
+    let articles = [];
     
+    try {
+      articles = await this.fetchArticlesFromAPI();
+    } catch (error) {
+      articles = this.formatLocalArticles(localArticles);
+    }
+    
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
-      <div class="modal-content">
+      <div class="modal-content" id="modal-content">
         <button class="modal-close">&times;</button>
         <img src="${article.image}" alt="${article.title}" class="modal-image" />
         <div class="modal-body">
@@ -80,14 +129,32 @@ const ArticlesView = {
           <p class="modal-text">${article.excerpt}</p>
           <p class="modal-text">This is a detailed view of the article. In a real implementation, you would fetch the full content from the source.</p>
           <span class="modal-source">Source: ${article.source}</span>
-          <a href="${article.url}" target="_blank" class="external-link">Read Full Article</a>
+          <span class="modal-date">Published: ${article.date}</span>
+          <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="external-link">Read Full Article</a>
         </div>
       </div>
     `;
     
     document.body.appendChild(modal);
+    
+    // Close when clicking the X button
     modal.querySelector('.modal-close').addEventListener('click', () => {
       document.body.removeChild(modal);
+    });
+    
+    // Close when clicking outside the modal content
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
+    
+    // Close when pressing Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        document.body.removeChild(modal);
+        document.removeEventListener('keydown', escHandler);
+      }
     });
   }
 };
