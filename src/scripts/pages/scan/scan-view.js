@@ -10,7 +10,9 @@ const ScanView = {
   isPredicting: false,
   animationFrameId: null,
   selectedImageElement: null,
-  classNames: ["Organik", "Non-Organik", "B3"],
+  classNames: ["Organik, masukkan ke tempat sampah kategori organik ya!🟩", 
+    "Non-organik? Jangan asal buang, ini bisa didaur ulang!🟨",
+    "B3 terdeteksi! Pisahkan, simpan dan buang ke tempat sampah b3 ya..🟥"],
 
   render() {
     return `
