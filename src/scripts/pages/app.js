@@ -41,25 +41,21 @@ class App {
       const url = getActiveRoute();
       const page = routes[url];
 
-      // Hancurkan halaman sebelumnya jika ada
       if (this.#currentPage && typeof this.#currentPage.destroy === 'function') {
         this.#currentPage.destroy();
       }
 
-      // Jika halaman tidak ditemukan, redirect ke '/'
       if (!page) {
         window.location.hash = '/';
         return;
       }
 
-      // Render halaman baru
       this.#content.innerHTML = await page.render();
       await page.afterRender();
 
       this.#currentPage = page;
     } catch (error) {
       console.error('Error rendering page:', error);
-      // Tampilkan feedback error yang informatif ke user
       this.#content.innerHTML = `
         <p style="text-align:center; color:red;">
           Terjadi kesalahan saat memuat halaman.

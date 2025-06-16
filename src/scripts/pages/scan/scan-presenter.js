@@ -21,7 +21,7 @@ export default class ScanPresenter {
       if (!this.model) {
         document.getElementById("result-text").textContent = "Memuat model...";
 
-        // Gunakan GraphModel jika menggunakan format .json dari tensorflow.js converter
+        //menggunakan format .json dari tensorflow.js converter
         this.model = await tf.loadGraphModel(this.modelPath);
 
         console.log("Model loaded successfully:", this.model);
@@ -29,7 +29,6 @@ export default class ScanPresenter {
 
         ScanView.setModel(this.model);
 
-        // Mulai prediksi hanya jika kamera aktif
         if (
           ScanView.videoElement &&
           ScanView.videoElement.srcObject &&

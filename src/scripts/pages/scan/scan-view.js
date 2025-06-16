@@ -72,38 +72,34 @@ const ScanView = {
   bindEvents() {
     const uploadButton = document.getElementById("upload-button");
     const cameraButton = document.getElementById("camera-button");
-    const stopCameraButton = document.getElementById("stop-camera-button"); // New stop button
+    const stopCameraButton = document.getElementById("stop-camera-button");
     const fileInput = document.getElementById("file-input");
     const previewContainer = document.getElementById("scan-preview-container");
     const resultText = document.getElementById("result-text");
     const pilahButton = document.getElementById("pilah-button");
 
-    // Clear previous content in preview container
     previewContainer.innerHTML = '';
 
-    // --- Inisialisasi Video dan Canvas Elements ---
     this.videoElement = document.createElement('video');
     this.videoElement.id = 'camera-preview';
     this.videoElement.autoplay = true;
     this.videoElement.playsInline = true;
     this.videoElement.style.maxWidth = '100%';
     this.videoElement.style.maxHeight = '100%';
-    this.videoElement.style.display = 'none'; // Hidden by default
+    this.videoElement.style.display = 'none';
 
     this.canvasElement = document.createElement('canvas');
     this.canvasElement.id = 'detection-canvas';
     this.canvasElement.style.maxWidth = '100%';
     this.canvasElement.style.maxHeight = '100%';
-    this.canvasElement.style.position = 'absolute'; // Position over video
+    this.canvasElement.style.position = 'absolute';
     this.canvasElement.style.top = '0';
     this.canvasElement.style.left = '0';
     this.ctx = this.canvasElement.getContext('2d');
 
-    // Add them to the container
     previewContainer.appendChild(this.videoElement);
     previewContainer.appendChild(this.canvasElement);
 
-    // --- Fungsi Bantuan ---
     const stopVideoStream = () => {
       if (this.videoStream) {
         const tracks = this.videoStream.getTracks();
@@ -113,7 +109,7 @@ const ScanView = {
       if (this.videoElement) {
         this.videoElement.style.display = 'none';
         previewContainer.innerHTML = '';
-this.selectedImageElement = null;
+        this.selectedImageElement = null;
 
         this.videoElement.srcObject = null;
       }
@@ -124,35 +120,32 @@ this.selectedImageElement = null;
       this.isPredicting = false;
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
-        this.animationFrameId = null; // Reset animation frame ID
+        this.animationFrameId = null;
       }
       resultText.textContent = "Hasil deteksi akan muncul di sini.";
       pilahButton.style.display = 'none';
-      cameraButton.style.display = 'inline-block'; // Show camera button again
-      stopCameraButton.style.display = 'none'; // Hide stop button
+      cameraButton.style.display = 'inline-block';
+      stopCameraButton.style.display = 'none';
     };
-    this.stopVideoStream = stopVideoStream; // Export for presenter
+    this.stopVideoStream = stopVideoStream;
 
     // --- Event Listeners ---
-
-    // Upload Button Click
     uploadButton.addEventListener("click", () => {
   stopVideoStream();
-  fileInput.value = ""; // Reset input agar bisa pilih file yg sama dua kali
-  previewContainer.innerHTML = ""; // Pastikan container bersih sebelum upload baru
-  this.selectedImageElement = null; // Reset
+  fileInput.value = "";
+  previewContainer.innerHTML = "";
+  this.selectedImageElement = null;
   resultText.textContent = "Silakan pilih gambar untuk diproses.";
   fileInput.click();
 });
 
 
-    // File input change
     fileInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      stopVideoStream(); // Hentikan kamera
+      stopVideoStream();
       const img = new Image();
       img.onload = () => {
   previewContainer.innerHTML = '';
@@ -163,7 +156,7 @@ this.selectedImageElement = null;
 
   this.selectedImageElement = img;
   resultText.textContent = "Gambar siap! Klik 'Pilah' untuk klasifikasi.";
-  pilahButton.style.display = 'block'; // Tampilkan tombol pilah segera
+  pilahButton.style.display = 'block';
 };
 
       img.src = e.target.result;
@@ -172,13 +165,10 @@ this.selectedImageElement = null;
   }
 });
 
-
-    // Camera Button Click
     cameraButton.addEventListener("click", async () => {
   try {
     stopVideoStream();
 
-// Tambahkan ulang elemen video & canvas ke DOM
 previewContainer.innerHTML = '';
 previewContainer.appendChild(this.videoElement);
 previewContainer.appendChild(this.canvasElement);
@@ -187,7 +177,7 @@ cameraButton.style.display = 'none';
 stopCameraButton.style.display = 'inline-block';
 
 
-    await this.loadModel(); // Pastikan model sudah dimuat sebelum lanjut
+    await this.loadModel();
 
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -221,17 +211,14 @@ stopCameraButton.style.display = 'inline-block';
   }
 });
 
-
-    // Stop Camera Button Click
     stopCameraButton.addEventListener('click', () => {
       stopVideoStream();
-      previewContainer.innerHTML = ''; // Bersihkan sisa gambar upload
+      previewContainer.innerHTML = '';
 this.selectedImageElement = null;
 resultText.textContent = "Mengaktifkan kamera...";
 
     });
 
-    // Tombol Pilah
     pilahButton.addEventListener("click", async () => {
       await this.loadModel();
       await this.classifyImage();
@@ -241,24 +228,18 @@ resultText.textContent = "Mengaktifkan kamera...";
   },
 
   // --- Metode untuk Interaksi dengan Presenter ---
-  // No need for setPredictionCallback here as predictWebcam is managed internally
-
   async predictWebcam() {
     if (!this.isPredicting || !this.videoElement || !this.model) {
       return;
     }
 
-    // tf.tidy ensures that all intermediate tensors are disposed of
     const prediction = tf.tidy(() => {
-// ... di dalam tf.tidy()
 const webcamImage = tf.browser.fromPixels(this.videoElement);
 
-// Define a central crop box (e.g., 50% of the video dimensions)
 const videoWidth = this.videoElement.videoWidth;
 const videoHeight = this.videoElement.videoHeight;
 
-// Calculate crop dimensions
-const cropSize = Math.min(videoWidth, videoHeight) * 0.7; // Example: 70% of the smaller dimension
+const cropSize = Math.min(videoWidth, videoHeight) * 0.7;
 const x1 = (videoWidth - cropSize) / 2;
 const y1 = (videoHeight - cropSize) / 2;
 const x2 = x1 + cropSize;
@@ -269,10 +250,10 @@ const croppedImage = webcamImage.slice([y1, x1, 0], [cropSize, cropSize, 3]);
 
 const resized = tf.image.resizeBilinear(croppedImage, [150, 150]) // Model input size
                          .toFloat()
-                         .div(tf.scalar(255)); // Normalize to [0, 1]
+                         .div(tf.scalar(255));
 const expanded = resized.expandDims(0); // Add batch dimension
 
-croppedImage.dispose(); // Don't forget to dispose the cropped tensor
+croppedImage.dispose();
 
 const output = this.model.execute(expanded);
       return output;
@@ -280,18 +261,14 @@ const output = this.model.execute(expanded);
 
     const [classId, probability] = await this.processPrediction(prediction);
 
-    // Dispose of the prediction tensor to free up memory
-    if (prediction instanceof tf.Tensor) { // Check if it's a single tensor
+    if (prediction instanceof tf.Tensor) {
       prediction.dispose();
-    } else if (Array.isArray(prediction)) { // If it's an array of tensors
+    } else if (Array.isArray(prediction)) {
       prediction.forEach(t => t.dispose());
     }
 
-
-    // Draw bounding box and label
     this.drawBoundingBoxAndLabel(classId, probability);
 
-    // Request next animation frame
     this.animationFrameId = requestAnimationFrame(() => this.predictWebcam());
   },
 
@@ -310,29 +287,26 @@ const output = this.model.execute(expanded);
   drawBoundingBoxAndLabel(label, score) {
     if (!this.ctx || !this.canvasElement) return;
 
-    // Clear previous drawings
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
-    // Draw bounding box for the whole frame
-    this.ctx.strokeStyle = '#00FF00'; // Green color for box
+    this.ctx.strokeStyle = '#00FF00';
     this.ctx.lineWidth = 4;
-    this.ctx.strokeRect(0, 0, this.canvasElement.width, this.canvasElement.height); // Full frame box
+    this.ctx.strokeRect(0, 0, this.canvasElement.width, this.canvasElement.height)
 
     // Draw label background
-    const fontSize = Math.max(16, this.canvasElement.width / 40); // Responsive font size
+    const fontSize = Math.max(16, this.canvasElement.width / 40);
     this.ctx.font = `${fontSize}px Arial`;
-    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.7)'; // Green background for text with some transparency
+    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.7)';
     const text = `${label} (${(score * 100).toFixed(1)}%)`;
     const textWidth = this.ctx.measureText(text).width;
-    const textHeight = fontSize + 8; // Padding for text background
+    const textHeight = fontSize + 8;
 
-    this.ctx.fillRect(0, 0, textWidth + 20, textHeight + 5); // Background rectangle, added padding
+    this.ctx.fillRect(0, 0, textWidth + 20, textHeight + 5);
 
     // Draw label text
-    this.ctx.fillStyle = '#000000'; // Black text
-    this.ctx.fillText(text, 10, fontSize + 2); // Position text, added padding
+    this.ctx.fillStyle = '#000000';
+    this.ctx.fillText(text, 10, fontSize + 2);
 
-    // Update result text
     document.getElementById("result-text").textContent = `Terdeteksi: ${text}`;
   },
 
@@ -349,8 +323,7 @@ const output = this.model.execute(expanded);
     }
   },
 
-  // Export stopVideoStream for external use by presenter on component destroy
-  stopVideoStream: null, // Initialized in bindEvents
+  stopVideoStream: null,
 };
 
 export default ScanView;
