@@ -44,7 +44,7 @@ const VideosView = {
   },
 
   async fetchVideosFromAPI() {
-    const YOUTUBE_API_KEY = 'AIzaSyD7nU8LN81uEHs32qBCRvNwaPvxXWnNuTc';
+    const YOUTUBE_API_KEY = 'secret';
     const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/search';
     
     const query = 'waste management recycling';

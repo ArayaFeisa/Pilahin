@@ -43,11 +43,11 @@ const ArticlesView = {
   },
 
   async fetchArticlesFromAPI() {
-    const NEWS_API_KEY = '7a32c925962241139c4944adc150c2b9';
+    const NEWS_API_KEY = 'secret';
     const NEWS_API_URL = 'https://newsapi.org/v2/everything';
     
     const query = 'waste management OR recycling OR "environmental protection"';
-    const pageSize = 6; // Changed from 6 to 5 to only request 5 articles
+    const pageSize = 6; 
     const sortBy = 'publishedAt';
     
     const response = await fetch(
