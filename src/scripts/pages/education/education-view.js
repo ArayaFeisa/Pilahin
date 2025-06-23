@@ -16,12 +16,12 @@ const EducationView = {
       // Fetch data from APIs with fallback to local data
       const articles = await this.fetchArticles().catch((error) => {
         console.error('Using local articles due to API error:', error);
-        return localArticles.slice(0, 4);
+        return localArticles.slice(0, 3);
       });
 
       const videos = await this.fetchVideos().catch((error) => {
         console.error('Using local videos due to API error:', error);
-        return localVideos.slice(0, 4);
+        return localVideos.slice(0, 3);
       });
 
       return `
@@ -48,7 +48,7 @@ const EducationView = {
           </div>
           
           <div class="articles-grid">
-            ${articles.slice(0, 4).map(article => `
+            ${articles.slice(0, 3).map(article => `
               <article class="article-card">
                 <img src="${article.urlToImage || article.image || '/images/default-article.jpg'}" 
                      alt="${article.title}" 
@@ -79,7 +79,7 @@ const EducationView = {
           </div>
           
           <div class="videos-grid">
-            ${videos.slice(0, 4).map(video => `
+            ${videos.slice(0, 3).map(video => `
               <div class="video-card" data-video-id="${video.id?.videoId || video.videoId || ''}">
                 <div class="video-thumbnail">
                   <img src="${video.snippet?.thumbnails?.medium?.url || video.thumbnail || '/images/default-video.jpg'}" 
@@ -139,7 +139,7 @@ const EducationView = {
       
       if (!data.articles) {
         console.log('No articles found in API response, using local data');
-        return localArticles.slice(0, 4);
+        return localArticles.slice(0, 3);
       }
       
       // Simple relevance filtering
@@ -154,7 +154,7 @@ const EducationView = {
                description.includes('daur ulang'));
       });
       
-      return filteredArticles.slice(0, 4);
+      return filteredArticles.slice(0, 3);
     } catch (error) {
       console.error('Error fetching articles:', error);
       throw error; // Throw to trigger local fallback
@@ -175,7 +175,7 @@ const EducationView = {
       
       if (!data.items) {
         console.log('No videos found in API response, using local data');
-        return localVideos.slice(0, 4);
+        return localVideos.slice(0, 3);
       }
       
       // Simple quality filtering
@@ -191,7 +191,7 @@ const EducationView = {
                 description.includes('daur ulang'));
       });
       
-      return filteredVideos.slice(0, 4);
+      return filteredVideos.slice(0, 3);
     } catch (error) {
       console.error('Error fetching videos:', error);
       throw error; // Throw to trigger local fallback
