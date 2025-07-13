@@ -33,7 +33,7 @@ const EducationView = {
             <div class="eco-education-text">
               <h2 class="eco-education-title">Eco Education</h2>
               <p class="eco-education-description">
-                Tingkatkan wawasan lingkunganmu lewat berbagai video edukatif dan artikel menarik 
+                Tingkatkan wwawasan lingkunganmu lewat berbagai video edukatif dan artikel menarik 
                 tentang pemilahan sampah dan daur ulang. Semua dirancang untuk pembelajaran mudah.
               </p>
             </div>
